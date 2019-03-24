@@ -4,9 +4,9 @@
 
 Emmet 的前身叫做：Zen Coding，也许熟知旧名的人不在少数。Emmet 一般前端工程师用得比较多，具体它是做什么的，我们通过下面两张 Gif 演示图来说明：
 
-![Emmet 的介绍](images/xix-a-emmet-introduce-1.gif)
+![Emmet 的介绍](images/1.gif)
 
-![Emmet 的介绍](images/xix-a-emmet-introduce-2.gif)
+![Emmet 的介绍](images/1.gif)
 
 > * IntelliJ IDEA 自带 Emmet 功能，使用的快捷键是 `Tab`。
 
@@ -19,7 +19,7 @@ Emmet 资料介绍：
 
 ## Emmet 的设置
 
-![Emmet 的设置](images/xix-b-emmet-settings-1.jpg)
+![Emmet 的设置](images/1.jpg)
 
 > * 如上图标注 1 所示，IntelliJ IDEA 支持主流四个浏览器内核的一些特别 CSS 书写。
 > * 如上图标注 2 所示，可以增加或是删除某些属性。
