@@ -1,32 +1,186 @@
-# Emmet 的使用
+# ESP BLE Mesh client model demo
 
-## Emmet 的介绍
+## requirement
 
-Emmet 的前身叫做：Zen Coding，也许熟知旧名的人不在少数。Emmet 一般前端工程师用得比较多，具体它是做什么的，我们通过下面两张 Gif 演示图来说明：
+You need two devices to run this project.One device run ble_mesh_client_model project,One device run ble_mesh_node project.
+You need to use the nRF Mesh app.
 
-![Emmet 的介绍](images/1.gif)
+The timing diagram is shown below：
 
-![Emmet 的介绍](images/1.gif)
+**note：The node does not send a message immediately after entering the address through the serial port.
+When nRF_Mesh_App sends a control message to the node, the client node sends a message to the node of the previously entered message.**
 
-> * IntelliJ IDEA 自带 Emmet 功能，使用的快捷键是 `Tab`。
+## Use nRF_Mesh_App
 
-Emmet 资料介绍：
 
-> * Emmet 官网：<http://emmet.io>
-> * Emmet 官网文档：<http://docs.emmet.io/>
-> * Emmet 速查表：<http://docs.emmet.io/cheat-sheet/>
-> * Emmet 项目主页：<https://github.com/emmetio/emmet>
+## 1. Introduction
 
-## Emmet 的设置
+### 1.1 Node Composition
+This demo has only one element, in which the following two models are implemented:
+- **Configuration Server model**: The role of this model is mainly to configure Provisioner device’s AppKey and set up its relay function, TTL size, subscription, etc.
+- **Generic OnOff Client model**: This model implements the most basic function of turning the lights on and off.
 
-![Emmet 的设置](images/1.jpg)
+### 1.2 Demo Function
 
-> * 如上图标注 1 所示，IntelliJ IDEA 支持主流四个浏览器内核的一些特别 CSS 书写。
-> * 如上图标注 2 所示，可以增加或是删除某些属性。
-> * 具体使用，如下图 Gif 演示。
+1 Input the address of another node as the destination address through the serial port.
+2 Generic OnOff client model send messge to Generic OnOff server model.
 
-![Emmet 的设置](images/xix-b-emmet-settings-2.gif)
+### 1.3 Server and Client Model Interaction
 
-![Emmet 的设置](images/xix-b-emmet-settings-3.jpg)
+You can choose the following 4 ways to interact：
+1. Acknowledged Get
+2. Acknowledged Set
+3. Unacknowledged Set
+4. Acknowledged set with periodic publishing
 
-> * 如上图标注红圈所示，在 `Live Templates` 中也有预设三套代码模板。
+
+## 2. Code Analysis
+
+### 2.1 receive command by uart
+
+You should use the serial port tool.Connect the pins of the device 16,17.
+```
+#define UART1_TX_PIN  GPIO_NUM_16
+#define UART1_RX_PIN  GPIO_NUM_17
+```
+There is a Task here that receive command by uart.
+You can enter the address of another node as the destination address for the message.
+
+```
+static void board_uart_task(void *p)
+{   
+    uint8_t *data = calloc(1, UART_BUF_SIZE);
+    uint32_t input;
+    
+    while (1) { 
+        int len = uart_read_bytes(MESH_UART_NUM, data, UART_BUF_SIZE, 100 / portTICK_RATE_MS);
+        if (len > 0) {
+            input = strtoul((const char *)data, NULL, 16);
+            remote_addr = input & 0xFFFF;
+            ESP_LOGI(TAG, "%s: input 0x%08x, remote_addr 0x%04x", __func__, input, remote_addr);
+            memset(data, 0, UART_BUF_SIZE);
+        }
+    }
+    
+    vTaskDelete(NULL);
+}
+```
+### 2.2  model init
+
+#### 2.2.1 onoff server model init
+```
+//model publish init,Allocating space to publish message.
+static esp_ble_mesh_model_pub_t onoff_srv_pub = {
+    .msg = NET_BUF_SIMPLE(2 + 1),
+    .update = NULL,
+    .dev_role = MSG_ROLE,
+};
+//registe massage opcode
+static esp_ble_mesh_model_op_t onoff_op[] = {
+    { ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET, 0, 0},
+    { ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET, 2, 0},
+    { ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET_UNACK, 2, 0},
+    ESP_BLE_MESH_MODEL_OP_END,
+};
+//registe onoff server model.
+static esp_ble_mesh_model_t root_models[] = {
+    //onoff server's onoff state init
+    ESP_BLE_MESH_SIG_MODEL(ESP_BLE_MESH_MODEL_ID_GEN_ONOFF_SRV, onoff_op,
+    &onoff_srv_pub, &led_state[0]),
+};
+```
+#### 2.2.2 onoff client model init
+```
+//model publish init,Allocating space to publish message.
+static esp_ble_mesh_model_pub_t onoff_cli_pub = {
+    .msg = NET_BUF_SIMPLE(2 + 1),
+    .update = NULL,
+    .dev_role = MSG_ROLE,
+};
+//registe onoff client model.
+static esp_ble_mesh_model_t root_models[] = {
+    ESP_BLE_MESH_MODEL_GEN_ONOFF_CLI(&onoff_cli_pub, &onoff_client),
+};
+```
+
+
+
+### 2.3 model callback
+#### 2.3.1 onoff client model callback
+```
+esp_ble_mesh_register_generic_client_callback(esp_ble_mesh_generic_cb);
+
+```
+1. Callback trigger.
+>Receiving a message about onoff client mode will trigger this callback function
+>call send messgae API about onoff client model.
+
+2. The event that the callback function needs to handle.
+
+| Event name | Description                    |
+| ------------- | ------------------------------ |
+| ESP_BLE_MESH_GENERIC_CLIENT_GET_STATE_EVT    |onoff client model receive messages from onoff server model       |
+| ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET   | receive ackownleged before send ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET message   |
+| ESP_BLE_MESH_GENERIC_CLIENT_SET_STATE_EVT   | onoff client model receive messages from onoff server model      |
+| ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET   |  receive ackownleged before send ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET message     |
+| ESP_BLE_MESH_GENERIC_CLIENT_PUBLISH_EVT   | receive publish message    |
+| ESP_BLE_MESH_GENERIC_CLIENT_TIMEOUT_EVT   | send message timeout event    |
+| ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET   | send  ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET message timeout event  |
+
+
+
+#### 2.3.2 onoff server callback
+```
+esp_ble_mesh_register_custom_model_callback(esp_ble_mesh_model_cb);
+
+```
+1. Callback trigger.
+>Receiving a message about onoff server mode will trigger this callback function
+>call send messgae API about onoff server model.
+2. The event that the callback function needs to handle.
+
+| Event name | Description                    |
+| ------------- | ------------------------------ |
+| ESP_BLE_MESH_MODEL_OPERATION_EVT    | onoff server model receive messages from onoff client model.         |
+| ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET    | Registered before （static esp_ble_mesh_model_op_t onoff_op[]）   |
+| ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET    | Registered before （static esp_ble_mesh_model_op_t onoff_op[]）   |
+| ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET_UNACK  |Registered before （static esp_ble_mesh_model_op_t onoff_op[]）|
+| ESP_BLE_MESH_MODEL_SEND_COMP_EVT    | Call esp_ble_mesh_server_model_send_msg API will trigger this event when it call completion |
+| ESP_BLE_MESH_MODEL_PUBLISH_COMP_EVT    | Call esp_ble_mesh_model_publish API will trigger this event when it call completion     |
+
+### 2.4 model send messgae
+#### 2.4.1 onoff client send messgae
+esp_ble_mesh_generic_client_get_state
+```
+esp_ble_mesh_generic_client_get_state_t get_state = {0};
+esp_ble_mesh_set_msg_common(&common, node, onoff_client.model, ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET);
+err = esp_ble_mesh_generic_client_get_state(&common, &get_state);
+if (err) {
+    ESP_LOGE(TAG, "%s: Generic OnOff Get failed", __func__);
+    return;
+}
+```
+esp_ble_mesh_generic_client_set_state
+```
+esp_ble_mesh_generic_client_set_state_t set_state = {0};
+esp_ble_mesh_set_msg_common(&common, &set_state, onoff_client.model,
+                             ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET, remote_onoff);
+err = esp_ble_mesh_generic_client_set_state(&common, &set_state);
+if (err != ESP_OK) {
+    ESP_LOGE(TAG, "%s: Generic OnOff Set failed", __func__);
+    return;
+}
+```
+
+#### 2.4.2 onoff server send messgae
+esp_ble_mesh_server_model_send_msg
+```
+err = esp_ble_mesh_server_model_send_msg(model, ctx, ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_STATUS,
+       sizeof(send_data), &send_data);
+```
+esp_ble_mesh_model_publish
+```
+err = esp_ble_mesh_model_publish(model, ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_STATUS,
+                                 sizeof(led->current), &led->current, ROLE_NODE);
+```
+
