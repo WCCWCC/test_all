@@ -8,7 +8,7 @@ You need to use the nRF Mesh app.
 The timing diagram is shown below：
 
 
-<div align=center>![Packet interaction](images/picture5.png)
+![Packet interaction](images/picture5.png) <div align=center>
 
 
 **note：The node does not send a message immediately after entering the address through the serial port.
