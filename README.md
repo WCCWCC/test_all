@@ -1,34 +1,39 @@
 # ESP BLE Mesh client model demo
+This demo forward the packet sent by the app.
 
-## requirement
-
-You need two devices to run this project.One device run ble_mesh_client_model project,One device run ble_mesh_node project.
-You need to use the nRF Mesh app.
+example: App send `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` messge to the node（ble_mesh_client_model）.Then node will send `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` message to other node（ble_mesh_node） that the destination address is the address entered by the serial port.
 
 The timing diagram is shown below：
 
-
 ![Packet interaction](images/picture5.png) <div align=center></div>
+
+> * App provising unprovisioned devices to node.
+> * App add appkey to the node and bind appkey with generic onoff server an generic onoff client model.
+> * App send control message,then node forward the message to other node. 
 
 
 **note：The node does not send a message immediately after entering the address through the serial port.
 When nRF_Mesh_App sends a control message to the node, the client node sends a message to the node of the previously entered message.**
 
+
+## requirement
+You need two devices to run this project and nRF Mesh app.
+**One device run ble_mesh_client_model project.**
+**One device run ble_mesh_node project.**
+
+
 ## Use nRF_Mesh_App
 
 ![Packet interaction](images/app.png)
 
+> * As shown in the note 1 above,Scan unprovisioned devices.
+> * As shown in the note 3 above,provising unprovisioned devices.
+> * As shown in the note 5 above,click CONFOG button,Then you can config node's model.
+> * As shown in the note 6 above,click Generic On Off Client button.
+> * As shown in the note 7 above,bind appkey to Generic On Off Client model.
+> * As shown in the note 9 above,bind appkey to Generic On Off Server model.
+> * As shown in the note 10 above,control Generic On Off Server model's state.
 
-> * 如上图标注 1 所示，文件代码模板支持的类型基本常见的文件类型都涵盖了。
-> * 如上图标注 2 所示，这是 Java 文件模板新建的代码模板，其中 `${PACKAGE_NAME}、${NAME}` 是 IntelliJ IDEA 预设的变量。
-> * 如上图标注 3 所示，IntelliJ IDEA 的文件代码模板是可以使用 `Velocity Template Language` (VTL) 进行书写的。如图 2 上的 `#if ... #end` 和 `#parse` 都是 VTL 的语法。
-> * 如上图标注 4 所示，介绍当前文件模板的一些信息，以及一些预设变量的作用介绍。
-> * 如上图标注 5 所示，这四个按钮是文件代码模板的主要操作按钮，四个操作分别是：
->
->> * `Create Template` 创建一个文件代码模板。 
->> * `Remove Template` 删除一个文件代码模板，标注 1 所示的这些预设模板是不允许删除的，只能能删除预设之外的新增的。
->> * `Copy Template` 复制一个文件代码模板。 
->> * `Reset To Default` 对被修改的预设文件代码模板，还原到默认状态。
 ## 1. Introduction
 
 ### 1.1 Node Composition
