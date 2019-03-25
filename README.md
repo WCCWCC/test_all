@@ -18,7 +18,6 @@ When nRF_Mesh_App sends a control message to the node, the client node sends a m
 
 ![Packet interaction](images/app.png)
 
-<div align="center"><img src="image/app.png" width = "1300" alt="Application Profiles are used to organize a BLE application in order to implement different functionality for different clients." align=center /> </div>
 
 > * 如上图标注 1 所示，文件代码模板支持的类型基本常见的文件类型都涵盖了。
 > * 如上图标注 2 所示，这是 Java 文件模板新建的代码模板，其中 `${PACKAGE_NAME}、${NAME}` 是 IntelliJ IDEA 预设的变量。
