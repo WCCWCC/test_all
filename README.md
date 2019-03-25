@@ -42,8 +42,8 @@ This demo has only one element, in which the following two models are implemente
 
 ### 1.2 Demo Function
 
-1 Input the address of another node as the destination address through the serial port.
-2 Generic OnOff client model send messge to Generic OnOff server model.
+1. Input the address of another node as the destination address through the serial port.
+2. Generic OnOff client model send messge to Generic OnOff server model.
 
 ### 1.3 Server and Client Model Interaction
 
