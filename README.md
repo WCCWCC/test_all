@@ -67,6 +67,8 @@ You should use the serial port tool.Connect the pins of the device 16,17.
 ```
 There is a Task here that receive command by uart.
 You can enter the address of another node as the destination address for the message.
+`remote_addr` that represents the destination address of the packet you are forwarding.
+such as:input 5,then The value of this variable is 0x05.
 
 ```c
 static void board_uart_task(void *p)
