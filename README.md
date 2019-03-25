@@ -171,7 +171,7 @@ esp_ble_mesh_register_custom_model_callback(esp_ble_mesh_model_cb);
 
 ### 2.4 model send messgae
 #### 2.4.1 onoff client send messgae
-esp_ble_mesh_generic_client_get_state
+`esp_ble_mesh_generic_client_get_state`
 ```c
 esp_ble_mesh_generic_client_get_state_t get_state = {0};
 esp_ble_mesh_set_msg_common(&common, node, onoff_client.model, ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET);
@@ -181,7 +181,7 @@ if (err) {
     return;
 }
 ```
-esp_ble_mesh_generic_client_set_state
+`esp_ble_mesh_generic_client_set_state`
 ```c
 esp_ble_mesh_generic_client_set_state_t set_state = {0};
 esp_ble_mesh_set_msg_common(&common, &set_state, onoff_client.model,
@@ -194,12 +194,12 @@ if (err != ESP_OK) {
 ```
 
 #### 2.4.2 onoff server send messgae
-esp_ble_mesh_server_model_send_msg
+`esp_ble_mesh_server_model_send_msg`
 ```c
 err = esp_ble_mesh_server_model_send_msg(model, ctx, ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_STATUS,
        sizeof(send_data), &send_data);
 ```
-esp_ble_mesh_model_publish
+`esp_ble_mesh_model_publish`
 ```c
 err = esp_ble_mesh_model_publish(model, ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_STATUS,
                                  sizeof(led->current), &led->current, ROLE_NODE);
