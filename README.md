@@ -53,7 +53,7 @@ You should use the serial port tool.Connect the pins of the device 16,17.
 >> * `Reset To Default` 对被修改的预设文件代码模板，还原到默认状态。
 
 
-```
+```c
 #define UART1_TX_PIN  GPIO_NUM_16
 #define UART1_RX_PIN  GPIO_NUM_17
 ```
@@ -82,7 +82,7 @@ static void board_uart_task(void *p)
 ### 2.2  model init
 
 #### 2.2.1 onoff server model init
-```
+```c
 //model publish init,Allocating space to publish message.
 static esp_ble_mesh_model_pub_t onoff_srv_pub = {
     .msg = NET_BUF_SIMPLE(2 + 1),
@@ -104,7 +104,7 @@ static esp_ble_mesh_model_t root_models[] = {
 };
 ```
 #### 2.2.2 onoff client model init
-```
+```c
 //model publish init,Allocating space to publish message.
 static esp_ble_mesh_model_pub_t onoff_cli_pub = {
     .msg = NET_BUF_SIMPLE(2 + 1),
@@ -121,7 +121,7 @@ static esp_ble_mesh_model_t root_models[] = {
 
 ### 2.3 model callback
 #### 2.3.1 onoff client model callback
-```
+```c
 esp_ble_mesh_register_generic_client_callback(esp_ble_mesh_generic_cb);
 
 ```
@@ -144,7 +144,7 @@ esp_ble_mesh_register_generic_client_callback(esp_ble_mesh_generic_cb);
 
 
 #### 2.3.2 onoff server callback
-```
+```c
 esp_ble_mesh_register_custom_model_callback(esp_ble_mesh_model_cb);
 
 ```
@@ -165,7 +165,7 @@ esp_ble_mesh_register_custom_model_callback(esp_ble_mesh_model_cb);
 ### 2.4 model send messgae
 #### 2.4.1 onoff client send messgae
 esp_ble_mesh_generic_client_get_state
-```
+```c
 esp_ble_mesh_generic_client_get_state_t get_state = {0};
 esp_ble_mesh_set_msg_common(&common, node, onoff_client.model, ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET);
 err = esp_ble_mesh_generic_client_get_state(&common, &get_state);
@@ -175,7 +175,7 @@ if (err) {
 }
 ```
 esp_ble_mesh_generic_client_set_state
-```
+```c
 esp_ble_mesh_generic_client_set_state_t set_state = {0};
 esp_ble_mesh_set_msg_common(&common, &set_state, onoff_client.model,
                              ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET, remote_onoff);
@@ -188,12 +188,12 @@ if (err != ESP_OK) {
 
 #### 2.4.2 onoff server send messgae
 esp_ble_mesh_server_model_send_msg
-```
+```c
 err = esp_ble_mesh_server_model_send_msg(model, ctx, ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_STATUS,
        sizeof(send_data), &send_data);
 ```
 esp_ble_mesh_model_publish
-```
+```c
 err = esp_ble_mesh_model_publish(model, ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_STATUS,
                                  sizeof(led->current), &led->current, ROLE_NODE);
 ```
