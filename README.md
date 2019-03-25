@@ -4,13 +4,11 @@ This demo forward the packet sent by the app.
 example: App send `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` messge to the node（ble_mesh_client_model）.Then node will send `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` message to other node（ble_mesh_node） that the destination address is the address entered by the serial port.
 
 The timing diagram is shown below：
-
 ![Packet interaction](images/picture5.png) <div align=center></div>
 
 > * App provising unprovisioned devices to node.
 > * App add appkey to the node and bind appkey with generic onoff server an generic onoff client model.
 > * App send control message,then node forward the message to other node. 
-
 
 **note：The node does not send a message immediately after entering the address through the serial port.
 When nRF_Mesh_App sends a control message to the node, the client node sends a message to the node of the previously entered message.**
