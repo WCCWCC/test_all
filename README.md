@@ -7,9 +7,9 @@ You need to use the nRF Mesh app.
 
 The timing diagram is shown below：
 
-![Packet interaction](images/picture5.png div align="center"  width = "900"  align=center)
 
-<div align="center"><img src="image/packet.png" width = "900" alt="Application Profiles are used to organize a BLE application in order to implement different functionality for different clients." align=center /> </div>
+<div align=center>![Packet interaction](images/picture5.png)
+
 
 **note：The node does not send a message immediately after entering the address through the serial port.
 When nRF_Mesh_App sends a control message to the node, the client node sends a message to the node of the previously entered message.**
