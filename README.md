@@ -6,7 +6,8 @@ You need two devices to run this project.One device run ble_mesh_client_model pr
 You need to use the nRF Mesh app.
 
 The timing diagram is shown below：
-![Packet interaction](images/picture5.png)
+
+![Packet interaction](images/picture5.png div align="center"  width = "900"  align=center)
 
 <div align="center"><img src="image/packet.png" width = "900" alt="Application Profiles are used to organize a BLE application in order to implement different functionality for different clients." align=center /> </div>
 
