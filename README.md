@@ -134,12 +134,12 @@ esp_ble_mesh_register_generic_client_callback(esp_ble_mesh_generic_cb);
 | Event name | Description                    |
 | ------------- | ------------------------------ |
 | ESP_BLE_MESH_GENERIC_CLIENT_GET_STATE_EVT    |onoff client model receive messages from onoff server model       |
-| ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET   | receive ackownleged before send ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET message   |
+| ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET   | receive ackownleged before send `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET` message   |
 | ESP_BLE_MESH_GENERIC_CLIENT_SET_STATE_EVT   | onoff client model receive messages from onoff server model      |
-| ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET   |  receive ackownleged before send ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET message     |
+| ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET   |  receive ackownleged before send `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` message     |
 | ESP_BLE_MESH_GENERIC_CLIENT_PUBLISH_EVT   | receive publish message    |
 | ESP_BLE_MESH_GENERIC_CLIENT_TIMEOUT_EVT   | send message timeout event    |
-| ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET   | send  ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET message timeout event  |
+| ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET   | send  `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` message timeout event  |
 
 
 
@@ -156,11 +156,11 @@ esp_ble_mesh_register_custom_model_callback(esp_ble_mesh_model_cb);
 | Event name | Description                    |
 | ------------- | ------------------------------ |
 | ESP_BLE_MESH_MODEL_OPERATION_EVT    | onoff server model receive messages from onoff client model.         |
-| ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET    | Registered before （static esp_ble_mesh_model_op_t onoff_op[]）   |
-| ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET    | Registered before （static esp_ble_mesh_model_op_t onoff_op[]）   |
-| ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET_UNACK  |Registered before （static esp_ble_mesh_model_op_t onoff_op[]）|
-| ESP_BLE_MESH_MODEL_SEND_COMP_EVT    | Call esp_ble_mesh_server_model_send_msg API will trigger this event when it call completion |
-| ESP_BLE_MESH_MODEL_PUBLISH_COMP_EVT    | Call esp_ble_mesh_model_publish API will trigger this event when it call completion     |
+| ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET    | Registered before （static `esp_ble_mesh_model_op_t` onoff_op[]）   |
+| ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET    | Registered before （static `esp_ble_mesh_model_op_t` onoff_op[]`）   |
+| ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET_UNACK  |Registered before （static `esp_ble_mesh_model_op_t` onoff_op[]`）|
+| ESP_BLE_MESH_MODEL_SEND_COMP_EVT    | Call `esp_ble_mesh_server_model_send_msg` API will trigger this event when it call completion |
+| ESP_BLE_MESH_MODEL_PUBLISH_COMP_EVT    | Call `esp_ble_mesh_model_publish` API will trigger this event when it call completion     |
 
 ### 2.4 model send messgae
 #### 2.4.1 onoff client send messgae
