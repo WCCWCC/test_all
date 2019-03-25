@@ -4,6 +4,7 @@ This demo forward the packet sent by the app.
 example: App send `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` messge to the node（ble_mesh_client_model）.Then node will send `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` message to other node（ble_mesh_node） that the destination address is the address entered by the serial port.
 
 The timing diagram is shown below：
+
 ![Packet interaction](images/picture5.png) <div align=center></div>
 
 > * App provising unprovisioned devices to node.
