@@ -33,12 +33,26 @@ You can choose the following 4 ways to interact：
 3. Unacknowledged Set
 4. Acknowledged set with periodic publishing
 
+![Packet interaction](images/2.gif)
 
 ## 2. Code Analysis
 
 ### 2.1 receive command by uart
 
 You should use the serial port tool.Connect the pins of the device 16,17.
+
+> * 如上图标注 1 所示，文件代码模板支持的类型基本常见的文件类型都涵盖了。
+> * 如上图标注 2 所示，这是 Java 文件模板新建的代码模板，其中 `${PACKAGE_NAME}、${NAME}` 是 IntelliJ IDEA 预设的变量。
+> * 如上图标注 3 所示，IntelliJ IDEA 的文件代码模板是可以使用 `Velocity Template Language` (VTL) 进行书写的。如图 2 上的 `#if ... #end` 和 `#parse` 都是 VTL 的语法。
+> * 如上图标注 4 所示，介绍当前文件模板的一些信息，以及一些预设变量的作用介绍。
+> * 如上图标注 5 所示，这四个按钮是文件代码模板的主要操作按钮，四个操作分别是：
+>
+>> * `Create Template` 创建一个文件代码模板。 
+>> * `Remove Template` 删除一个文件代码模板，标注 1 所示的这些预设模板是不允许删除的，只能能删除预设之外的新增的。
+>> * `Copy Template` 复制一个文件代码模板。 
+>> * `Reset To Default` 对被修改的预设文件代码模板，还原到默认状态。
+
+
 ```
 #define UART1_TX_PIN  GPIO_NUM_16
 #define UART1_RX_PIN  GPIO_NUM_17
@@ -46,7 +60,7 @@ You should use the serial port tool.Connect the pins of the device 16,17.
 There is a Task here that receive command by uart.
 You can enter the address of another node as the destination address for the message.
 
-```
+```c
 static void board_uart_task(void *p)
 {   
     uint8_t *data = calloc(1, UART_BUF_SIZE);
