@@ -37,7 +37,7 @@ You can choose the following 4 ways to interact：
 //model publish init,Allocating space to publish message.
 static esp_ble_mesh_model_pub_t onoff_srv_pub = {
     .msg = NET_BUF_SIMPLE(2 + 1),
-    .update = NULL,
+    .update = NULL,        
     .dev_role = MSG_ROLE,
 };
 //registe massage opcode
@@ -108,8 +108,33 @@ esp_ble_mesh_register_custom_model_callback(esp_ble_mesh_model_cb);
   
 
 ### 2.3 model send messgae
+#### 2.3.0 message contorl
+`esp_ble_mesh_set_msg_common` This function used to set message contorl parameters. 
+| parameter name        |Description               |
+| ----------------------|------------------------- |
+| `opcode`      |o   |
+| `model`       |o   |
+| `ctx.net_idx` |o   |
+| `ctx.app_idx` |o   |
+| `ctx.addr`    |o   |
+| `ctx.send_ttl`|o   |
+| `ctx.send_rel`|o   |
+| `msg_timeout` |o   |
+| `msg_role`    |o   |
+
+```c
+    common->opcode = opcode;
+    common->model = model;
+    common->ctx.net_idx = node_net_idx;
+    common->ctx.app_idx = node_app_idx;
+    common->ctx.addr = remote_addr;
+    common->ctx.send_ttl = MSG_SEND_TTL;
+    common->ctx.send_rel = MSG_SEND_REL;
+    common->msg_timeout = MSG_TIMEOUT;
+    common->msg_role = MSG_ROLE;
+```
 #### 2.3.1 onoff client send messgae
-`esp_ble_mesh_generic_client_get_state`
+`esp_ble_mesh_generic_client_get_state` This API used to client model get the state from the server model.such as onoff state.
 ```c
 esp_ble_mesh_generic_client_get_state_t get_state = {0};
 esp_ble_mesh_set_msg_common(&common, node, onoff_client.model, ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET);
@@ -119,6 +144,7 @@ if (err) {
     return;
 }
 ```
+
 `esp_ble_mesh_generic_client_set_state`
 ```c
 esp_ble_mesh_generic_client_set_state_t set_state = {0};
@@ -132,12 +158,15 @@ if (err != ESP_OK) {
 ```
 
 #### 2.3.2 onoff server send messgae
-`esp_ble_mesh_server_model_send_msg`
+
+`esp_ble_mesh_server_model_send_msg` Model needs to bind appkey before sending a message.
 ```c
 err = esp_ble_mesh_server_model_send_msg(model, ctx, ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_STATUS,
        sizeof(send_data), &send_data);
 ```
-`esp_ble_mesh_model_publish`
+`esp_ble_mesh_model_publish` The destination address of the published message is the publish address of the model binding.
+model need to binding publish address,Then the node that subscribes to this address will receive the message.
+
 ```c
 err = esp_ble_mesh_model_publish(model, ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_STATUS,
                                  sizeof(led->current), &led->current, ROLE_NODE);
