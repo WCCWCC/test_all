@@ -100,9 +100,9 @@ esp_ble_mesh_register_custom_model_callback(esp_ble_mesh_model_cb);
 
 | Event name    | Opcode      |Description                                 |
 | ------------- | ------------|------------------------------------------- |
-| ESP_BLE_MESH_MODEL_OPERATION_EVT   | ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET        |onoff server model receive messages from onoff client model.opcode registered before （static `esp_ble_mesh_model_op_t` onoff_op[]）     |
-| ESP_BLE_MESH_MODEL_OPERATION_EVT   | ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET        | onoff server model receive messages from onoff client model.opcode registered before （static `esp_ble_mesh_model_op_t` onoff_op[]）  |
-| ESP_BLE_MESH_MODEL_OPERATION_EVT   | ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET_UNACK  |  onoff server model receive messages from onoff client model.opcode registered before （static `esp_ble_mesh_model_op_t` onoff_op[]）   |
+| ESP_BLE_MESH_MODEL_OPERATION_EVT   | ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET        |onoff server model receive messages from onoff client model.   |
+| ESP_BLE_MESH_MODEL_OPERATION_EVT   | ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET        | onoff server model receive messages from onoff client model.  |
+| ESP_BLE_MESH_MODEL_OPERATION_EVT   | ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET_UNACK  |  onoff server model receive messages from onoff client model.   |
 | ESP_BLE_MESH_MODEL_SEND_COMP_EVT   | no deal opcode                           | send message timeout event | `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` message timeout event   |Call `esp_ble_mesh_server_model_send_msg` API will trigger this event when it call completion|
 | ESP_BLE_MESH_MODEL_PUBLISH_COMP_EVT| no deal opcode       | Call `esp_ble_mesh_model_publish` API will trigger this event when it call completion     |
   
