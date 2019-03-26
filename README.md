@@ -1,51 +1,23 @@
-# ESP BLE Mesh client model demo
-This demo forward the packet sent by the app.
+# 1. Introduction
+## 1.1 Demo Function
+1. This demo forward the packet sent by the app.
+2. The destination address of the forwarded packet is entered by the user.
+3. Forwarded message types include `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET`,`ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET`,`ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET_UNACK`,`ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_STATUS`.
 
 example: App send `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` messge to the node（ble_mesh_client_model）.Then node will send `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` message to other node（ble_mesh_node） that the destination address is the address entered by the serial port.
 
-The timing diagram is shown below：
-
-![Packet interaction](images/picture5.png) <div align=center></div>
-
-> * App provising unprovisioned devices to node.
-> * App add appkey to the node and bind appkey with generic onoff server an generic onoff client model.
-> * App send control message,then node forward the message to other node. 
-
-**note：The node does not send a message immediately after entering the address through the serial port.
-When nRF_Mesh_App sends a control message to the node, the client node sends a message to the node of the previously entered message.**
-
-
-## requirement
-You need two devices to run this project and nRF Mesh app.
+## 1.1.1 requirement
 **One device run ble_mesh_client_model project.**
 **One device run ble_mesh_node project.**
+**You can use nRF Mesh app to control tow device**
 
-
-## Use nRF_Mesh_App
-
-![Packet interaction](images/app.png)
-
-> * As shown in the note 1 above,Scan unprovisioned devices.
-> * As shown in the note 3 above,provising unprovisioned devices.
-> * As shown in the note 5 above,click CONFOG button,Then you can config node's model.
-> * As shown in the note 6 above,click Generic On Off Client button.
-> * As shown in the note 7 above,bind appkey to Generic On Off Client model.
-> * As shown in the note 9 above,bind appkey to Generic On Off Server model.
-> * As shown in the note 10 above,control Generic On Off Server model's state.
-
-## 1. Introduction
-
-### 1.1 Node Composition
+## 1.2 Node Composition
 This demo has only one element, in which the following two models are implemented:
 - **Configuration Server model**: The role of this model is mainly to configure Provisioner device’s AppKey and set up its relay function, TTL size, subscription, etc.
 - **Generic OnOff Client model**: This model implements the most basic function of turning the lights on and off.
+- **Generic OnOff Server model**: This model implements the node's onoff state.
 
-### 1.2 Demo Function
-
-1. Input the address of another node as the destination address through the serial port.
-2. Generic OnOff client model send messge to Generic OnOff server model.
-
-### 1.3 Server and Client Model Interaction
+## 1.3 Message Interaction
 
 You can choose the following 4 ways to interact：
 1. Acknowledged Get
@@ -57,39 +29,7 @@ You can choose the following 4 ways to interact：
 
 ## 2. Code Analysis
 
-### 2.1 receive command by uart
-
-You should use the serial port tool.Connect the pins of the device 16,17.
-
-```c
-#define UART1_TX_PIN  GPIO_NUM_16
-#define UART1_RX_PIN  GPIO_NUM_17
-```
-There is a Task here that receive command by uart.
-You can enter the address of another node as the destination address for the message.
-`remote_addr` that represents the destination address of the packet you are forwarding.
-such as:input 5,then The value of this variable is 0x05.
-
-```c
-static void board_uart_task(void *p)
-{   
-    uint8_t *data = calloc(1, UART_BUF_SIZE);
-    uint32_t input;
-    
-    while (1) { 
-        int len = uart_read_bytes(MESH_UART_NUM, data, UART_BUF_SIZE, 100 / portTICK_RATE_MS);
-        if (len > 0) {
-            input = strtoul((const char *)data, NULL, 16);
-            remote_addr = input & 0xFFFF;
-            ESP_LOGI(TAG, "%s: input 0x%08x, remote_addr 0x%04x", __func__, input, remote_addr);
-            memset(data, 0, UART_BUF_SIZE);
-        }
-    }
-    
-    vTaskDelete(NULL);
-}
-```
-### 2.2  model init
+### 2.2  model define
 
 #### 2.2.1 onoff server model init
 ```c
@@ -126,9 +66,6 @@ static esp_ble_mesh_model_t root_models[] = {
     ESP_BLE_MESH_MODEL_GEN_ONOFF_CLI(&onoff_cli_pub, &onoff_client),
 };
 ```
-
-
-
 ### 2.3 model callback
 #### 2.3.1 onoff client model callback
 ```c
@@ -207,4 +144,65 @@ err = esp_ble_mesh_server_model_send_msg(model, ctx, ESP_BLE_MESH_MODEL_OP_GEN_O
 err = esp_ble_mesh_model_publish(model, ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_STATUS,
                                  sizeof(led->current), &led->current, ROLE_NODE);
 ```
+
+
+## 2.5 receive command by uart
+
+You should use the serial port tool.Connect the pins of the device 16,17.
+
+```c
+#define UART1_TX_PIN  GPIO_NUM_16
+#define UART1_RX_PIN  GPIO_NUM_17
+```
+There is a Task here that receive command by uart.
+You can enter the address of another node as the destination address for the message.
+`remote_addr` that represents the destination address of the packet you are forwarding.
+such as:input 5,then The value of this variable is 0x05.
+
+```c
+static void board_uart_task(void *p)
+{   
+    uint8_t *data = calloc(1, UART_BUF_SIZE);
+    uint32_t input;
+    
+    while (1) { 
+        int len = uart_read_bytes(MESH_UART_NUM, data, UART_BUF_SIZE, 100 / portTICK_RATE_MS);
+        if (len > 0) {
+            input = strtoul((const char *)data, NULL, 16);
+            remote_addr = input & 0xFFFF;
+            ESP_LOGI(TAG, "%s: input 0x%08x, remote_addr 0x%04x", __func__, input, remote_addr);
+            memset(data, 0, UART_BUF_SIZE);
+        }
+    }
+    
+    vTaskDelete(NULL);
+}
+```
+
+
+## 2.6 timing diagram
+The timing diagram is shown below：
+
+![Packet interaction](images/picture5.png) <div align=center></div>
+
+> * App provising unprovisioned devices to node.
+> * App add appkey to the node and bind appkey with generic onoff server an generic onoff client model.
+> * App send control message,then node forward the message to other node. 
+
+**note：The node does not send a message immediately after entering the address through the serial port.
+When nRF_Mesh_App sends a control message to the node, the client node sends a message to the node of the previously entered message.**
+
+
+
+## 2.7 Use nRF_Mesh_App
+
+![Packet interaction](images/app.png)
+
+> * As shown in the note 1 above,Scan unprovisioned devices.
+> * As shown in the note 3 above,provising unprovisioned devices.
+> * As shown in the note 5 above,click CONFOG button,Then you can config node's model.
+> * As shown in the note 6 above,click Generic On Off Client button.
+> * As shown in the note 7 above,bind appkey to Generic On Off Client model.
+> * As shown in the note 9 above,bind appkey to Generic On Off Server model.
+> * As shown in the note 10 above,control Generic On Off Server model's state.
 
