@@ -109,8 +109,8 @@ esp_ble_mesh_register_custom_model_callback(esp_ble_mesh_model_cb);
 
 ### 2.3 model send messgae
 #### 2.3.0 message contorl
-
 `esp_ble_mesh_set_msg_common` This function used to set message contorl parameters. 
+
 | parameter name        |Description               |
 | ----------------------|------------------------- |
 | `opcode`      | The Message opcode  |
@@ -122,6 +122,7 @@ esp_ble_mesh_register_custom_model_callback(esp_ble_mesh_model_cb);
 | `ctx.send_rel`| Force sending reliably,Waiting for a response from the message   |
 | `msg_timeout` | Time to wait for a response   |
 | `msg_role`    | message role (node/proviser)  |
+
 **note:After the message is sent，you should check the event (ESP_BLE_MESH_MODEL_SEND_COMP_EVT),Check if the message was sent successfully**
 
 #### 2.3.1 onoff client send messgae
