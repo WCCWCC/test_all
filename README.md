@@ -7,9 +7,9 @@
 example: App send `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` messge to the node（ble_mesh_client_model）.Then node will send `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` message to other node（ble_mesh_node） that the destination address is the address entered by the serial port.
 
 ## 1.1.1 requirement
-**One device run ble_mesh_client_model project.**
-**One device run ble_mesh_node project.**
-**You can use nRF Mesh app to control tow device**
+**1. One device run ble_mesh_client_model project.**
+**2. One device run ble_mesh_node project.**
+**3. You can use nRF Mesh app to control tow device**
 
 ## 1.2 Node Composition
 This demo has only one element, in which the following two models are implemented:
@@ -29,9 +29,9 @@ You can choose the following 4 ways to interact：
 
 ## 2. Code Analysis
 
-### 2.2  model define
+### 2.1  model define
 
-#### 2.2.1 onoff server model init
+#### 2.1.1 onoff server model init
 ```c
 //model publish init,Allocating space to publish message.
 static esp_ble_mesh_model_pub_t onoff_srv_pub = {
@@ -53,7 +53,7 @@ static esp_ble_mesh_model_t root_models[] = {
     &onoff_srv_pub, &led_state[0]),
 };
 ```
-#### 2.2.2 onoff client model init
+#### 2.1.2 onoff client model init
 ```c
 //model publish init,Allocating space to publish message.
 static esp_ble_mesh_model_pub_t onoff_cli_pub = {
@@ -66,8 +66,8 @@ static esp_ble_mesh_model_t root_models[] = {
     ESP_BLE_MESH_MODEL_GEN_ONOFF_CLI(&onoff_cli_pub, &onoff_client),
 };
 ```
-### 2.3 model callback
-#### 2.3.1 onoff client model callback
+### 2.2 model callback
+#### 2.2.1 onoff client model callback
 ```c
 esp_ble_mesh_register_generic_client_callback(esp_ble_mesh_generic_cb);
 
@@ -90,7 +90,7 @@ esp_ble_mesh_register_generic_client_callback(esp_ble_mesh_generic_cb);
 
 
 
-#### 2.3.2 onoff server callback
+#### 2.2.2 onoff server callback
 ```c
 esp_ble_mesh_register_custom_model_callback(esp_ble_mesh_model_cb);
 
@@ -109,8 +109,8 @@ esp_ble_mesh_register_custom_model_callback(esp_ble_mesh_model_cb);
 | ESP_BLE_MESH_MODEL_SEND_COMP_EVT    | Call `esp_ble_mesh_server_model_send_msg` API will trigger this event when it call completion |
 | ESP_BLE_MESH_MODEL_PUBLISH_COMP_EVT    | Call `esp_ble_mesh_model_publish` API will trigger this event when it call completion     |
 
-### 2.4 model send messgae
-#### 2.4.1 onoff client send messgae
+### 2.3 model send messgae
+#### 2.3.1 onoff client send messgae
 `esp_ble_mesh_generic_client_get_state`
 ```c
 esp_ble_mesh_generic_client_get_state_t get_state = {0};
@@ -133,7 +133,7 @@ if (err != ESP_OK) {
 }
 ```
 
-#### 2.4.2 onoff server send messgae
+#### 2.3.2 onoff server send messgae
 `esp_ble_mesh_server_model_send_msg`
 ```c
 err = esp_ble_mesh_server_model_send_msg(model, ctx, ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_STATUS,
@@ -146,7 +146,7 @@ err = esp_ble_mesh_model_publish(model, ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_STATUS,
 ```
 
 
-## 2.5 receive command by uart
+## 2.4 receive command by uart
 
 You should use the serial port tool.Connect the pins of the device 16,17.
 
@@ -180,7 +180,7 @@ static void board_uart_task(void *p)
 ```
 
 
-## 2.6 timing diagram
+## 2.5 timing diagram
 The timing diagram is shown below：
 
 ![Packet interaction](images/picture5.png) <div align=center></div>
@@ -194,7 +194,7 @@ When nRF_Mesh_App sends a control message to the node, the client node sends a m
 
 
 
-## 2.7 Use nRF_Mesh_App
+## 2.6 Use nRF_Mesh_App
 
 ![Packet interaction](images/app.png)
 
