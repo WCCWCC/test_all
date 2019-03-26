@@ -2,17 +2,18 @@
 ## 1.1 Demo Function
 1. This demo forward the packet sent by the app.
 2. The destination address of the forwarded packet is entered by the user.
-3. Forwarded message types include `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET`,`ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET`,`ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET_UNACK`,`ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_STATUS`.
+3. Forwarded message types include `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET`,`ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET`,`ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET_UNACK`.
+4. Report node's onoff state message `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_STATUS`.
 
 example: App send `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` messge to the node（ble_mesh_client_model）.Then node will send `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` message to other node（ble_mesh_node） that the destination address is the address entered by the serial port.
 
 ## 1.1.1 requirement
 1. One device run ble_mesh_client_model project.
 2. One device run ble_mesh_node project.
-3. You can use nRF Mesh app to control tow device
+3. You can use nRF Mesh app to control two device
 
 ## 1.2 Node Composition
-This demo has only one element, in which the following two models are implemented:
+This demo has only one element, in which the following three models are implemented:
 - **Configuration Server model**: The role of this model is mainly to configure Provisioner device’s AppKey and set up its relay function, TTL size, subscription, etc.
 - **Generic OnOff Client model**: This model implements the most basic function of turning the lights on and off.
 - **Generic OnOff Server model**: This model implements the node's onoff state.
@@ -23,15 +24,15 @@ You can choose the following 4 ways to interact：
 1. Acknowledged Get
 2. Acknowledged Set
 3. Unacknowledged Set
-4. Acknowledged set with periodic publishing
+4. Period publishing
 
 ![Packet interaction](images/2.gif)
 
 ## 2. Code Analysis
 
-### 2.1  model define
+### 2.1  model definition
 
-#### 2.1.1 onoff server model init
+#### 2.1.1 Generic OnOff Server model definition
 ```c
 //model publish init,Allocating space to publish message.
 static esp_ble_mesh_model_pub_t onoff_srv_pub = {
@@ -53,7 +54,7 @@ static esp_ble_mesh_model_t root_models[] = {
     &onoff_srv_pub, &led_state[0]),
 };
 ```
-#### 2.1.2 onoff client model init
+#### 2.1.2 Generic OnOff Client model definition
 ```c
 //model publish init,Allocating space to publish message.
 static esp_ble_mesh_model_pub_t onoff_cli_pub = {
