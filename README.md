@@ -109,6 +109,7 @@ esp_ble_mesh_register_custom_model_callback(esp_ble_mesh_model_cb);
 
 ### 2.3 model send messgae
 #### 2.3.0 message contorl
+
 `esp_ble_mesh_set_msg_common` This function used to set message contorl parameters. 
 | parameter name        |Description               |
 | ----------------------|------------------------- |
