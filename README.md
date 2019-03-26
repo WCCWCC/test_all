@@ -112,27 +112,17 @@ esp_ble_mesh_register_custom_model_callback(esp_ble_mesh_model_cb);
 `esp_ble_mesh_set_msg_common` This function used to set message contorl parameters. 
 | parameter name        |Description               |
 | ----------------------|------------------------- |
-| `opcode`      |o   |
-| `model`       |o   |
-| `ctx.net_idx` |o   |
-| `ctx.app_idx` |o   |
-| `ctx.addr`    |o   |
-| `ctx.send_ttl`|o   |
-| `ctx.send_rel`|o   |
-| `msg_timeout` |o   |
-| `msg_role`    |o   |
+| `opcode`      | The Message opcode  |
+| `model`       | Pointer to the client model structure  |
+| `ctx.net_idx` | NetKey Index of the subnet through which to send the message. |
+| `ctx.app_idx` | AppKey Index for message encryption. |
+| `ctx.addr`    | Remote address/Destination address |
+| `ctx.send_ttl`| message TTL,relay parameter |
+| `ctx.send_rel`| Force sending reliably,Waiting for a response from the message   |
+| `msg_timeout` | Time to wait for a response   |
+| `msg_role`    | message role (node/proviser)  |
+**note:After the message is sent，you should check the event (ESP_BLE_MESH_MODEL_SEND_COMP_EVT),Check if the message was sent successfully**
 
-```c
-    common->opcode = opcode;
-    common->model = model;
-    common->ctx.net_idx = node_net_idx;
-    common->ctx.app_idx = node_app_idx;
-    common->ctx.addr = remote_addr;
-    common->ctx.send_ttl = MSG_SEND_TTL;
-    common->ctx.send_rel = MSG_SEND_REL;
-    common->msg_timeout = MSG_TIMEOUT;
-    common->msg_role = MSG_ROLE;
-```
 #### 2.3.1 onoff client send messgae
 `esp_ble_mesh_generic_client_get_state` This API used to client model get the state from the server model.such as onoff state.
 ```c
@@ -145,7 +135,7 @@ if (err) {
 }
 ```
 
-`esp_ble_mesh_generic_client_set_state`
+`esp_ble_mesh_generic_client_set_state`This API used to client model set the state from the server model.such as onoff state.
 ```c
 esp_ble_mesh_generic_client_set_state_t set_state = {0};
 esp_ble_mesh_set_msg_common(&common, &set_state, onoff_client.model,
