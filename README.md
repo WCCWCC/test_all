@@ -7,9 +7,9 @@
 example: App send `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` messge to the node（ble_mesh_client_model）.Then node will send `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` message to other node（ble_mesh_node） that the destination address is the address entered by the serial port.
 
 ## 1.1.1 requirement
-**1. One device run ble_mesh_client_model project.**
-**2. One device run ble_mesh_node project.**
-**3. You can use nRF Mesh app to control tow device**
+1. One device run ble_mesh_client_model project.
+2. One device run ble_mesh_node project.
+3. You can use nRF Mesh app to control tow device
 
 ## 1.2 Node Composition
 This demo has only one element, in which the following two models are implemented:
