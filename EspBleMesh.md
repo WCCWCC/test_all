@@ -7,13 +7,12 @@ A video of this demo can be seen ![here](http://download.espressif.com/BLE_MESH/
 # What You Need 
 
 * ![EspBleMesh App for Android](http://download.espressif.com/BLE_MESH/ESP_BLE_MESH_APKs/EspBleMesh-0.9.3.apk)
-* ![ESP BLE Mesh SDK v0.6(Beta Version
-d)](https://glab.espressif.cn/ble_mesh/esp-ble-mesh-v0.6)
+* ![ESP BLE Mesh SDK v0.6(Beta Version)](https://glab.espressif.cn/ble_mesh/esp-ble-mesh-v0.6)
 * ESP32 Development Boards
 
 > Note:
 > 
-> 1. Please flash the ![`ble_mesh_fast_prov_server`（改为相对路径）](examples/bluetooth/ble_mesh/ble_mesh_fast_provision/ble_mesh_fast_prov_server) to your boards first;
+> 1. Please flash the ![`ble_mesh_fast_prov_server`](examples/bluetooth/ble_mesh/ble_mesh_fast_provision/ble_mesh_fast_prov_server) to your boards first;
 > 2. To have a better understanding of the performance of the BLE Mesh network, we recommend that at least 3 devices should be added in your network.
 > 3. We recommend that you solder LED indicators if your development board does not come with lights. 
 > 4. Please check the type of board and LED pin definition enabled in `Example BLE Mesh Config` by running `make menuconfig`
