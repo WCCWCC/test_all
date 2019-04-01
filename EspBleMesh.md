@@ -28,7 +28,7 @@ examples/bluetooth/ble_mesh/ble_mesh_fast_provision/ble_mesh_fast_prov_server
 2.	Make sure that the `IDF_PATH` environment variable was set in accordance with your current IDF path
 3. Check the version of your toolchain. Version 4.1 or newer should be used.
  
-![Checkenvironment](images/手册-1-副本.png)
+![Checkenvironment](images/手册-1 - 副本.png)
 
 4. Run `make -j4 flash` to compile codes and flash the codes to the device.
 
