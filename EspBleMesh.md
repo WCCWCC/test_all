@@ -2,12 +2,13 @@
 
 This demo demonstrates the fast provisioning of ESP BLE Mesh network and how to use the EspBleMesh app to control an individual provisioned node or all the provisioned nodes.
  
-A video of this demo can be seen ![here](http://download.espressif.com/BLE_MESH/BLE_Mesh_Demo/V0.4_Demo_Fast_Provision/ESP32_BLE_Mesh_Fast_Provision.mp4)
+A video of this demo can be seen 
+[here](http://download.espressif.com/BLE_MESH/BLE_Mesh_Demo/V0.4_Demo_Fast_Provision/ESP32_BLE_Mesh_Fast_Provision.mp4)
 
 # What You Need 
 
-* ![EspBleMesh App for Android](http://download.espressif.com/BLE_MESH/ESP_BLE_MESH_APKs/EspBleMesh-0.9.3.apk)
-* ![ESP BLE Mesh SDK v0.6(Beta Version)](https://glab.espressif.cn/ble_mesh/esp-ble-mesh-v0.6)
+* [EspBleMesh App for Android](http://download.espressif.com/BLE_MESH/ESP_BLE_MESH_APKs/EspBleMesh-0.9.3.apk)
+* [ESP BLE Mesh SDK v0.6(Beta Version)](https://glab.espressif.cn/ble_mesh/esp-ble-mesh-v0.6)
 * ESP32 Development Boards
 
 > Note:
@@ -16,6 +17,7 @@ A video of this demo can be seen ![here](http://download.espressif.com/BLE_MESH/
 > 2. To have a better understanding of the performance of the BLE Mesh network, we recommend that at least 3 devices should be added in your network.
 > 3. We recommend that you solder LED indicators if your development board does not come with lights. 
 > 4. Please check the type of board and LED pin definition enabled in `Example BLE Mesh Config` by running `make menuconfig`
+
 ![Board](images/设备.png)
 
 
