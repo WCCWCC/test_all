@@ -13,7 +13,7 @@ A video of this demo can be seen
 
 > Note:
 > 
-> 1. Please flash the ![`ble_mesh_fast_prov_server`](examples/bluetooth/ble_mesh/ble_mesh_fast_provision/ble_mesh_fast_prov_server) to your boards first;
+> 1. Please flash the [`ble_mesh_fast_prov_server`](https://glab.espressif.cn/ble_mesh/esp-ble-mesh-v0.6/tree/ble_mesh_release/esp-ble-mesh-v0.6/examples/bluetooth/ble_mesh/ble_mesh_fast_provision/ble_mesh_fast_prov_server) to your boards first;
 > 2. To have a better understanding of the performance of the BLE Mesh network, we recommend that at least 3 devices should be added in your network.
 > 3. We recommend that you solder LED indicators if your development board does not come with lights. 
 > 4. Please check the type of board and LED pin definition enabled in `Example BLE Mesh Config` by running `make menuconfig`
@@ -28,17 +28,16 @@ examples/bluetooth/ble_mesh/ble_mesh_fast_provision/ble_mesh_fast_prov_server
 2.	Make sure that the `IDF_PATH` environment variable was set in accordance with your current IDF path
 3. Check the version of your toolchain. Version 4.1 or newer should be used.
  
-![Check environment](images/手册-1-副本.png)
+![Checkenvironment](images/手册-1-副本.png)
 
 4. Run `make -j4 flash` to compile codes and flash the codes to the device.
 
-![compiled code](images/手册-2.png)
+![compiledcode](images/手册-2.png)
 
 > Note: 
 > 
 > Please click on the Exit button if you see the following windows.
                    
-Figure 4:Click exit.
 
 5. Please establish a connection between your device and PC, using the correct serial number, if you want to monitor the operation of this device on PC. 
 
