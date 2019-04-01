@@ -1,132 +1,152 @@
 # 1. Introduction
 ## 1.1 Demo Function
-1. This demo forward the packet sent by the app.
-2. The destination address of the forwarded packet is entered by the user.
-3. Forwarded message types include `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET`,`ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET`,`ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET_UNACK`.
-4. Report node's onoff state message `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_STATUS`.
 
-example: App send `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` messge to the node（ble_mesh_client_model）.Then node will send `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` message to other node（ble_mesh_node） that the destination address is the address entered by the serial port.
+1. This demo forwards the message sent by the nRF Mesh app.
+2. The user enters the address of the destination node and use it to forwarded packet.
+3. The types of the forwarded message include:
+	* `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET`, 
+	* `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET`,
+	* `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET_UNACK`.
+4. The destination node reports its Onoff state with the `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_STATUS` message.
 
-## 1.1.1 requirement
-1. One device run ble_mesh_client_model project.
-2. One device run ble_mesh_node project.
-3. You can use nRF Mesh app to control two device
+Example: The nRF Mesh app sends a `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` message to the node that runs the `ble_mesh_client_model` project. Then this node sends a `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` message to the destination node that runs the `ble_mesh_node` project. The address of the destination node is entered by the user via the serial port.
+
+## 1.1.1 What You Need
+
+* 1 x Device that runs the `ble_mesh_client_model` project.
+* 1 x Device that runs the `ble_mesh_node` project.
+* 1 x Phone that installs the nRF Mesh app for controlling these two devices
 
 ## 1.2 Node Composition
+
 This demo has only one element, in which the following three models are implemented:
-- **Configuration Server model**: The role of this model is mainly to configure Provisioner device’s AppKey and set up its relay function, TTL size, subscription, etc.
-- **Generic OnOff Client model**: This model implements the most basic function of turning the lights on and off.
-- **Generic OnOff Server model**: This model implements the node's onoff state.
 
-## 1.3 Message Interaction
+- **Configuration Server model** is mainly to represent a mesh network configuration, such as its AppKey, Relay State, TTL State, Subscription List State, etc.
+- **Generic OnOff Client model** controls a Generic OnOff Server via messages defined by the Generic OnOff Model, that is, turning on and off the lights.
+- **Generic OnOff Server model** implements the nodes' Onoff state.
 
-You can choose the following 4 ways to interact：
+## 1.3 Message Sequence
+
+You can choose from the 4 message sequences described below:
+
 1. Acknowledged Get
 2. Acknowledged Set
 3. Unacknowledged Set
-4. Period publishing
+4. Acknowledged Set with Periodic Publishing
 
 ![Packet interaction](images/2.gif)
 
 ## 2. Code Analysis
 
-### 2.1  model definition
+### 2.1 Model Definition
 
-#### 2.1.1 Generic OnOff Server model definition
+#### 2.1.1 Generic OnOff Server Model
+
 ```c
-//model publish init,Allocating space to publish message.
+//Allocating memory for publishing messages.
 static esp_ble_mesh_model_pub_t onoff_srv_pub = {
     .msg = NET_BUF_SIMPLE(2 + 1),
     .update = NULL,        
     .dev_role = MSG_ROLE,
 };
-//registe massage opcode
+//Registering the minimum length of messages. For example, the minimum length of the ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET message is registered as 2 octets. 
 static esp_ble_mesh_model_op_t onoff_op[] = {
     { ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET, 0, 0},
     { ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET, 2, 0},
     { ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET_UNACK, 2, 0},
     ESP_BLE_MESH_MODEL_OP_END,
 };
-//registe onoff server model.
+//Registering the Generic Onoff Server model.
 static esp_ble_mesh_model_t root_models[] = {
     //onoff server's onoff state init
     ESP_BLE_MESH_SIG_MODEL(ESP_BLE_MESH_MODEL_ID_GEN_ONOFF_SRV, onoff_op,
     &onoff_srv_pub, &led_state[0]),
 };
 ```
-#### 2.1.2 Generic OnOff Client model definition
+#### 2.1.2 Generic OnOff Client Model
 ```c
-//model publish init,Allocating space to publish message.
+//Allocating memory for publishing messages.
 static esp_ble_mesh_model_pub_t onoff_cli_pub = {
     .msg = NET_BUF_SIMPLE(2 + 1),
     .update = NULL,
     .dev_role = MSG_ROLE,
 };
-//registe onoff client model.
+//Registering the Generic Onoff Client model.
 static esp_ble_mesh_model_t root_models[] = {
     ESP_BLE_MESH_MODEL_GEN_ONOFF_CLI(&onoff_cli_pub, &onoff_client),
 };
 ```
-### 2.2 model callback
-#### 2.2.1 onoff client model callback
+
+### 2.2 Model Callback Function
+
+#### 2.2.1 The Callback function for the Generic Onoff Client model
+
 ```c
 esp_ble_mesh_register_generic_client_callback(esp_ble_mesh_generic_cb);
 
 ```
-1. Callback trigger.
->Receiving a message about onoff client mode will trigger this callback function
->call send messgae API about onoff client model.
+1. The callback function will be triggered when the Client model:
 
-2. The event that the callback function needs to handle.
+	* Receives a message that indicates the Onoff state of the Sever model; Or
+	* Calls any APIs that send messages.
+
+2. The events that the callback function handle:
 
 | Event name    | Opcode      |Description                                 |
 | ------------- | ------------|------------------------------------------- |
-| ESP_BLE_MESH_GENERIC_CLIENT_GET_STATE_EVT   | ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET    |onoff client model receive messages from onoff server model, receive ackownleged before send `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET` message        |
-| ESP_BLE_MESH_GENERIC_CLIENT_SET_STATE_EVT   | ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET    | onoff client model receive messages from onoff server model , receive ackownleged before send `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` message  |
-| ESP_BLE_MESH_GENERIC_CLIENT_PUBLISH_EVT     | no deal opcode                         | receive publish message    |
-| ESP_BLE_MESH_GENERIC_CLIENT_TIMEOUT_EVT     | ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET    | send message timeout event,send  `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` message timeout event   |
+| ESP_BLE_MESH_GENERIC_CLIENT_GET_STATE_EVT   | ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET    |The event triggered when the Generic Onoff Client model receives acknowledgment after sending the `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET` message        |
+| ESP_BLE_MESH_GENERIC_CLIENT_SET_STATE_EVT   | ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET    | The event triggered when the Generic Onoff Client model receives acknowledgment after sending the `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` message  |
+| ESP_BLE_MESH_GENERIC_CLIENT_PUBLISH_EVT     | NA                         | The event triggered when the Generic Onoff Client model receives publishing messages.    |
+| ESP_BLE_MESH_GENERIC_CLIENT_TIMEOUT_EVT     | ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET    | The event triggered when API (that send messages) calling times out   |
   
 
-#### 2.2.2 onoff server callback
+#### 2.2.2 The Callback function for the Generic Onoff Server model
+
 ```c
 esp_ble_mesh_register_custom_model_callback(esp_ble_mesh_model_cb);
 
 ```
-1. Callback trigger.
->Receiving a message about onoff server mode will trigger this callback function
->call send messgae API about onoff server model.
-2. The event that the callback function needs to handle.
+1. The callback function will be triggered when the Server model:
 
+	* Receives a message that indicates operating the Onoff state of the Server model from the Generic Onoff Client model; Or
+	* Calls any APIs that send messages.
 
-| Event name    | Opcode      |Description                                 |
-| ------------- | ------------|------------------------------------------- |
-| ESP_BLE_MESH_MODEL_OPERATION_EVT   | ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET        |onoff server model receive messages from onoff client model.   |
-| ESP_BLE_MESH_MODEL_OPERATION_EVT   | ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET        | onoff server model receive messages from onoff client model.  |
-| ESP_BLE_MESH_MODEL_OPERATION_EVT   | ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET_UNACK  |  onoff server model receive messages from onoff client model.   |
-| ESP_BLE_MESH_MODEL_SEND_COMP_EVT   | no deal opcode                           | send message timeout event | `ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET` message timeout event   |Call `esp_ble_mesh_server_model_send_msg` API will trigger this event when it call completion|
-| ESP_BLE_MESH_MODEL_PUBLISH_COMP_EVT| no deal opcode       | Call `esp_ble_mesh_model_publish` API will trigger this event when it call completion     |
-  
+2. The events that the callback function:
 
-### 2.3 model send messgae
-#### 2.3.0 message contorl
-`esp_ble_mesh_set_msg_common` This function used to set message contorl parameters. 
+| Event Name                          | Opcode                                    | Description                                                                                                                                                                              |
+|-------------------------------------|-------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ESP_BLE_MESH_MODEL_OPERATION_EVT    | ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET       | The event triggered when the Generic Onoff Server model receives the ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET message that **gets** the Onoff state of the server from the Client model       |
+| ESP_BLE_MESH_MODEL_OPERATION_EVT    | ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET       | The event triggered when the Generic Onoff Server model receives the ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET message that **sets** the Onoff state of the server from the Client model       |
+| ESP_BLE_MESH_MODEL_OPERATION_EVT    | ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET_UNACK | The event triggered when the Generic Onoff Server model receives the ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET_UNACK message that **sets** the Onoff state of the server from the Client model |
+| ESP_BLE_MESH_MODEL_SEND_COMP_EVT    | NA                                        | The event triggered when the `esp_ble_mesh_server_model_send_msg` API calling completes                                                                                                  |
+| ESP_BLE_MESH_MODEL_PUBLISH_COMP_EVT | NA                                        | The event triggered when the `esp_ble_mesh_model_publish` API calling completes                                                                                                          |
+| timeout                             | timeout                                   | timeout                                                                                                                                                                                  |
 
-| parameter name        |Description               |
+### 2.3 Model that Sends Message
+#### 2.3.1 Message Control
+
+The `esp_ble_mesh_set_msg_common` function is used to set the message controlling parameters. 
+
+| Parameter Name        |Description               |
 | ----------------------|------------------------- |
-| `opcode`      | The Message opcode  |
-| `model`       | Pointer to the client model structure  |
-| `ctx.net_idx` | NetKey Index of the subnet through which to send the message. |
-| `ctx.app_idx` | AppKey Index for message encryption. |
-| `ctx.addr`    | Remote address/Destination address |
-| `ctx.send_ttl`| message TTL,relay parameter |
-| `ctx.send_rel`| Force sending reliably,Waiting for a response from the message   |
-| `msg_timeout` | Time to wait for a response   |
-| `msg_role`    | message role (node/proviser)  |
+| `opcode`      | The message opcode  |
+| `model`       | The pointer to the client model struct  |
+| `ctx.net_idx` | The NetKey Index of the subnet through which the message is sent |
+| `ctx.app_idx` | The AppKey Index for message encryption |
+| `ctx.addr`    | The address of the destination nodes |
+| `ctx.send_ttl`| The TTL State, which determines how many times a message will be relayed |
+| `ctx.send_rel`| This parameter determines if the model will wait for an acknowledgement after sending a message   |
+| `msg_timeout` | The maximum time the model will wait for an acknowledgement   |
+| `msg_role`    | The role of message (node/provisioner)  |
 
-**note:After the message is sent，you should check the event (ESP_BLE_MESH_MODEL_SEND_COMP_EVT),Check if the message was sent successfully**
+> Note: 
+> 
+> Please check the `ESP_BLE_MESH_MODEL_SEND_COMP_EVT` event to see if the message is sent successfully.
 
-#### 2.3.1 onoff client send messgae
-`esp_ble_mesh_generic_client_get_state` This API used to client model get the state from the server model.such as onoff state.
+#### 2.3.2 The Generic Onoff Client sends message
+
+The Generic Onoff Client model calls the `esp_ble_mesh_generic_client_get_state` API to get the state of the server model, such as the Onoff state.
+
 ```c
 esp_ble_mesh_generic_client_get_state_t get_state = {0};
 esp_ble_mesh_set_msg_common(&common, node, onoff_client.model, ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_GET);
@@ -137,7 +157,8 @@ if (err) {
 }
 ```
 
-`esp_ble_mesh_generic_client_set_state`This API used to client model set the state from the server model.such as onoff state.
+The Generic Onoff Client model calls the `esp_ble_mesh_generic_client_set_state` API to set the state of the server model, such as the Onoff state.
+
 ```c
 esp_ble_mesh_generic_client_set_state_t set_state = {0};
 esp_ble_mesh_set_msg_common(&common, &set_state, onoff_client.model,
@@ -149,35 +170,38 @@ if (err != ESP_OK) {
 }
 ```
 
-#### 2.3.2 onoff server send messgae
+#### 2.3.3 The Generic Onoff Server sends message
 
-`esp_ble_mesh_server_model_send_msg` Model needs to bind appkey before sending a message.
+The Generic Onoff Server model has to bind its Appkey before calling the `esp_ble_mesh_server_model_send_msg` API to send a message.
+
 ```c
 err = esp_ble_mesh_server_model_send_msg(model, ctx, ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_STATUS,
        sizeof(send_data), &send_data);
 ```
-`esp_ble_mesh_model_publish` The destination address of the published message is the publish address of the model binding.
-model need to binding publish address,Then the node that subscribes to this address will receive the message.
+The Generic Onoff Server model calls the `esp_ble_mesh_model_publish` API to publish messages. Only the models that have subscribed to this destination address receive the published messages.
 
 ```c
 err = esp_ble_mesh_model_publish(model, ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_STATUS,
                                  sizeof(led->current), &led->current, ROLE_NODE);
 ```
 
+### 2.4 Users Enters the Address of the Destination Node via Serial Port
 
-## 2.4 receive command by uart
+Please connect your devices and enters the address of the destination node via the serial port.
 
-You should use the serial port tool.Connect the pins of the device 16,17.
+Users can adjust the address of the destination node.
+
+
+> Note:
+> Please connect the pin 16 and pin 17 of the device that runs the `ble_mesh_client_model` project to the USB-to-UART tool.
 
 ```c
 #define UART1_TX_PIN  GPIO_NUM_16
 #define UART1_RX_PIN  GPIO_NUM_17
 ```
-There is a Task here that receive command by uart.
-You can enter the address of another node as the destination address for the message.
-`remote_addr` that represents the destination address of the packet you are forwarding.
-such as:input 5,then The value of this variable is 0x05.
 
+The `board_uart_task` task is used to receive commands sent via the serial port, among which, the`remote_addr` represents the address of destination node that the message is forwarded to. Please enters hexadecimal string, such as 5, for this parameter. The address will be converted to 0x05 automatically. 
+	
 ```c
 static void board_uart_task(void *p)
 {   
@@ -199,29 +223,34 @@ static void board_uart_task(void *p)
 ```
 
 
-## 2.5 timing diagram
-The timing diagram is shown below：
+# 3. Timing Sequence Diagram
+
+The steps for this demo:
+
+1. The nRF Mesh App provisionings the unprovisioned devices into nodes;
+2. The nRF Mesh App adds a Appkey to these nodes, and bind the models of these nodes to this Appkey.
+3. The nRF Mesh App sends a controlling message to the Generic Onoff Client model. Then the Client model forwards this message to the server model of the other node. 
+
+The timing sequence diagram of this demo is shown below：
 
 ![Packet interaction](images/picture5.png) <div align=center></div>
 
-> * App provising unprovisioned devices to node.
-> * App add appkey to the node and bind appkey with generic onoff server an generic onoff client model.
-> * App send control message,then node forward the message to other node. 
-
-**note：The node does not send a message immediately after entering the address through the serial port.
-When nRF_Mesh_App sends a control message to the node, the client node sends a message to the node of the previously entered message.**
+>Note:
+>
+>The node **only forwards the message after it receives the controlling message sent by the app**. That is said, the node will **not** forwards messages to the other nodes every time the user enters the address of the destination node through the serial port. 
 
 
-
-## 2.6 Use nRF_Mesh_App
+# 4. The nRF Mesh App
 
 ![Packet interaction](images/app.png)
 
-> * As shown in the note 1 above,Scan unprovisioned devices.
-> * As shown in the note 3 above,provising unprovisioned devices.
-> * As shown in the note 5 above,click CONFOG button,Then you can config node's model.
-> * As shown in the note 6 above,click Generic On Off Client button.
-> * As shown in the note 7 above,bind appkey to Generic On Off Client model.
-> * As shown in the note 9 above,bind appkey to Generic On Off Server model.
-> * As shown in the note 10 above,control Generic On Off Server model's state.
-
+1. Scan the unprovisioned devices.
+2. Identity the the capability of the unprovisioned devices.
+3. Provisioning the unprovisioned devices.
+4. Check if the Mesh node has been configured successful.
+5. Configure the models of the nodes.
+6. Click on the Generic On Off Client option.
+7. Bind the Generic On Off Client model to the Appkey.
+8. Check if the binding is successfully.
+9. Bind the Generic On Off Server model to the Appkey.
+10. Send controlling messages.
