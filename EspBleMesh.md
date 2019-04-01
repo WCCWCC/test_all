@@ -27,12 +27,10 @@ examples/bluetooth/ble_mesh/ble_mesh_fast_provision/ble_mesh_fast_prov_server
 2.	Make sure that the `IDF_PATH` environment variable was set in accordance with your current IDF path
 3. Check the version of your toolchain. Version 4.1 or newer should be used.
  
- 
-Figure 2: Check environment
+![Check environment](images/手册-1-副本.png)
 
 4. Run `make -j4 flash` to compile codes and flash the codes to the device.
- 
-Figure 3: compiled code
+![compiled code](images/手册-2.png)
 
 > Note: 
 > 
@@ -45,8 +43,8 @@ Figure 4:Click exit.
 # How to Use the App
 
 Please launch the `EspBleMesh` app, and follow the steps described below to establish a BLE Mesh network and control any individual node or all the nodes.
- 
- 
+
+![App steps](images/app_ble.png)
 1. Click on the upper left corner to see more options;
 2. Click on **Provisioning** to scan nearby unprovisioned devices;
 3. Choose any unprovisioned devices in the scanned list;
@@ -55,9 +53,6 @@ Please launch the `EspBleMesh` app, and follow the steps described below to esta
 6. Click on the upper left corner to see more options;
 7. Click on **Fast Provisioned** to see all the provisioned devices;
 8. Control your devices.
-
-Figure 5: App steps
-
 
 > Note: 
 > 
@@ -75,7 +70,7 @@ Figure 5: App steps
 
 ## Interaction
 
-
+![Interaction](images/时序图.png)
 1. The Top Provisioner configures the first device to access the network with the GATT bearer.
 2. The Top Provisioner sends the `send_config_appkey_add` message to allocate the Appkey to this device. 
 3. The Top Provisioner sends the `send_fast_prov_info_set` message to provide the necessary information so the device can be changed to a Primary Provisioner.
