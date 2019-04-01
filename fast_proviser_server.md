@@ -1,7 +1,6 @@
 # 1. Introduction
 ## 1.1 Demo Function
-
-可以直接跳转。
+[here](https://github.com/WCCWCC/test_all/blob/master/EspBleMesh.md)
 
 ## 1.2 Node Composition
 This demo has only one element, in which the following three models are implemented:
