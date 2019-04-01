@@ -16,7 +16,7 @@ A video of this demo can be seen ![here](http://download.espressif.com/BLE_MESH/
 > 2. To have a better understanding of the performance of the BLE Mesh network, we recommend that at least 3 devices should be added in your network.
 > 3. We recommend that you solder LED indicators if your development board does not come with lights. 
 > 4. Please check the type of board and LED pin definition enabled in `Example BLE Mesh Config` by running `make menuconfig`
-![Board](images/手册-1-副本.png)
+![Board](images/设备.png)
 
 
 # Flash and Monitor
