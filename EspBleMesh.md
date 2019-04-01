@@ -84,7 +84,7 @@ Figure 5: App steps
 6. The Primary Provisioner sends the `send_fast_prov_info_set` message to provide the necessary information so the device can be changed to a Temporary Provisioner.
 7. The device calls the `esp_ble_mesh_set_fast_prov_action` API to change itself into the role of a Temporary Provisioner and starts its address timer.
 8. The Temporary Provisioner collects the addresses of nodes that it has provisioned and sends these addresses to the Primary Provisioner, when its address timer times out, which indicates the Temporary Provisioner hasn't provisioned any devices for 10s.
-9. The Primary Provisioner reconnects to the Top Provisioner when its xxx timer times out, which indicates the Primary Provisioner hasn't received any messages from the Temporary Provisioners for 10s.
+9. The Primary Provisioner reconnects to the Top Provisioner when its address timer times out, which indicates the Primary Provisioner hasn't received any messages from the Temporary Provisioners for 10s.
 10. The Top Provisioner sends the `node_adress_Get` message automatically after reconnecting with the Primary Provisioner.
 11. At this point, the Top Provisioner is able to control any nodes in the BLE Mesh Network.
 
