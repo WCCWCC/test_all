@@ -120,7 +120,7 @@ esp_ble_mesh_register_custom_model_callback(esp_ble_mesh_model_cb);
 | ESP_BLE_MESH_MODEL_OPERATION_EVT    | ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET_UNACK | The event triggered when the Generic Onoff Server model receives the ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_SET_UNACK message that **sets** the Onoff state of the server from the Client model |
 | ESP_BLE_MESH_MODEL_SEND_COMP_EVT    | NA                                        | The event triggered when the `esp_ble_mesh_server_model_send_msg` API calling completes                                                                                                  |
 | ESP_BLE_MESH_MODEL_PUBLISH_COMP_EVT | NA                                        | The event triggered when the `esp_ble_mesh_model_publish` API calling completes                                                                                                          |
-| timeout                             | timeout                                   | timeout                                                                                                                                                                                  |
+
 
 ### 2.3 Model that Sends Message
 #### 2.3.1 Message Control
