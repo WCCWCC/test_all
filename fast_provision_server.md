@@ -19,7 +19,7 @@ This demo has only one element, in which the following five models are implement
 `example_fast_prov_server_t` fast_prov_server. 
 I will classify the data structure and introduce the behavior of the variables.
 
-### 2.1.1 Provisioner role and state
+#### 2.1.1 Provisioner role and state
 Different provisers have different behaviors，It’s helpful to understand the role concept to understand the code.
 
 1. Phone - Top Provisioner
@@ -34,7 +34,7 @@ Different provisers have different behaviors，It’s helpful to understand the 
 | `srv_flags`  | flag to `DISABLE_FAST_PROV_START`,`SEND_ALL_NODE_ADDR_START`,`RELAY_PROXY_DISABLED`,`SRV_MAX_FLAGS`|
 
 
-### 2.1.2 Provisioner Address management
+#### 2.1.2 Provisioner Address management
 1. Assign a unicast address to prevent address conflicts.
 2. The way the address is allocated is the average allocation method.
 3. Each proviser has an address range and a maximum provisioning number.Each provisioning device is assigned a subset of its address range.
@@ -48,7 +48,7 @@ example: A configurator's address range is 0 to 100 and  a maximum provisioning 
 | `unicast_cur`      | Current unicast address can be assigned|
 | `unicast_step`     | Unicast address change step|
 
-### 2.1.3 Provisioner's cached data
+#### 2.1.3 Provisioner's cached data
 1. Cached data is used to initialize proviser.
 2. Call `esp_ble_mesh_set_fast_prov_info` API and `esp_ble_mesh_set_fast_prov_action` API.
 3. Then This node will have the ability to provisioning other unprovisioned device .
@@ -68,7 +68,7 @@ example: A configurator's address range is 0 to 100 and  a maximum provisioning 
 | `top_address`   | Address of the device(e.g. phone) which triggers fast provisioning |
 
 
-### 2.1.4 Provisioner's Timer
+#### 2.1.4 Provisioner's Timer
 `send_all_node_addr_timer` is used to collect the addresses of all nodes.
 if temporary provisioner provisioning unprovisioned device,the timer will restart or start.
 if timer timeout,temporary provisioner will send message(Address information) to primary provisioner.
@@ -293,7 +293,4 @@ esp_ble_mesh_server_model_send_msg(model, ctx, ESP_BLE_MESH_VND_MODEL_OP_FAST_PR
 `esp_ble_mesh_model_publish` The destination address of the published message is the publish address of the model binding.
 model need to binding publish address,Then the node that subscribes to this address will receive the message.
 ```c
-err = esp_ble_mesh_model_publish(model, ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_STATUS,
-                                msg->len ,msg->data ROLE_NODE);
-```
-
+err = esp_ble_mesh_
