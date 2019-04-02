@@ -1,10 +1,12 @@
 # 1. Introduction
 ## 1.1 Demo Function
+
+This demo is used for fast provisioning networks.Provisioning 100 devices for no more than 60s.
 [here](https://github.com/WCCWCC/test_all/blob/master/EspBleMesh.md)
 
 ## 1.2 Node Composition
 This demo has only one element, in which the following five models are implemented:
-- **Configuration Server model**: The role of this model is mainly to configure Provisioner device’s AppKey and set up its relay function, TTL size, subscription, etc.
+- **Configuration Server model**: This model is used to represent a mesh network configuration of a device.
 - **Configuration Client model**: This model is used to represent an element that can control and monitor the configuration of a node.
 - **Generic OnOff Server model**: This model implements the node's onoff state.
 
@@ -69,10 +71,10 @@ example: A configurator's address range is 0 to 100 and  a maximum provisioning 
 ### 2.1.4 Provisioner's Timer
 `send_all_node_addr_timer` is used to collect the addresses of all nodes.
 if temporary provisioner provisioning unprovisioned device,the timer will restart or start.
-if timer timeout,temporary provisioner will send massage(Address information) to primary provisioner.
+if timer timeout,temporary provisioner will send message(Address information) to primary provisioner.
 
 `disable_fast_prov_timer` is used to turn off the ability to provisioning.
-If the app controls the node, the node will start the timer.In order to turn off the provisioning capabilities of all nodes.You need to broadcast the way to control the node.Then all node will disable provisioning function.
+if app sends Generic OnOff Get/Set/Set Unack message to the node, the node will start the timer.In order to turn off the provisioning capabilities of all nodes.You need to use the group address to control the node's lights.Then all node will disable provisioning function.
 
 | variable name        |Description               |
 | ----------------------|------------------------- |
@@ -83,7 +85,7 @@ If the app controls the node, the node will start the timer.In order to turn off
 
 #### 2.2.1 Vender Server model definition
 1. `fast_prov_server` has been introduced above.
-2. `fast_prov_srv_op` used to register minimum length of the message.The message is identity by opcode.If the length of the message is less than the minimum value, the bottom layer will be directly discarded.
+2. `fast_prov_srv_op` used to register minimum length of the message.The message is identity by opcode.If the length of the message is less than the minimum value, message will be ignored in the bottom layer
 3. `example_fast_prov_server_init` Registered callback function with timer timeout and initialize the model-related variables in the data structure.
 4. `fast_prov_server` is the vender server's states.
 5. `CID_ESP` and `ESP_BLE_MESH_VND_MODEL_ID_FAST_PROV_SRV` is used to identity the vender server model.The vender server model's model id is `ESP_BLE_MESH_VND_MODEL_ID_FAST_PROV_SRV`.
@@ -136,9 +138,9 @@ static const esp_ble_mesh_client_op_pair_t fast_prov_cli_op_pair[] = {
     { ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_SET,      ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_STATUS      },
 };
 ```
-example:vender client model send massage with opcode `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_SET`,then the vender server model will respond massage with opcode `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_STATUS`.If no corresponding response is received,the vender server model will receive timeout.
+example:vender client model send message with opcode `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_SET`,then the vender server model will respond message with opcode `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_STATUS`.If no corresponding response is received,the vender server model will receive timeout.
 
-if you don't want receive response massgae,you should written as follows。
+if you don't want receive response message,you should written as follows。
 ```c
 static const esp_ble_mesh_client_op_pair_t fast_prov_cli_op_pair[] = {
     { ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_SET,      NULL      },
