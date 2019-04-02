@@ -228,8 +228,8 @@ I will sort by different mdoel.
 |ESP_BLE_MESH_SET_FAST_PROV_INFO_COMP_EVT|not opcode| call API `esp_ble_mesh_set_fast_prov_info` will trigger the event  |
 |ESP_BLE_MESH_SET_FAST_PROV_ACTION_COMP_EVT|not opcode| call API `esp_ble_mesh_set_fast_prov_action` will trigger the event   |
 //onoff client
-|ESP_BLE_MESH_CFG_CLIENT_SET_STATE_EVT|ESP_BLE_MESH_MODEL_OP_APP_KEY_ADD|会调用API发送info set消息 |
-|ESP_BLE_MESH_CFG_CLIENT_TIMEOUT_EVT|ESP_BLE_MESH_MODEL_OP_APP_KEY_ADD|超时事件|
+|ESP_BLE_MESH_CFG_CLIENT_SET_STATE_EVT|ESP_BLE_MESH_MODEL_OP_APP_KEY_ADD|Will call the API to send `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_SET` message |
+|ESP_BLE_MESH_CFG_CLIENT_TIMEOUT_EVT|ESP_BLE_MESH_MODEL_OP_APP_KEY_ADD|Timeout event|
 
 #### 2.4.2 Vender client model callback
 ```c
