@@ -111,7 +111,7 @@ return esp_ble_mesh_config_client_set_state(&common, &set);
 In this event (`ESP_BLE_MESH_CFG_CLIENT_SET_STATE_EVT`),The provisioner continues to send the cache information needed by the device to have the provisioning capabilities.The cached data type is defined in the structure (`example_fast_prov_info_set_t`).
 Now,The cached data required as a provisioner is sent.
 
-The API of example_send_fast_prov_info_set will trigger `ESP_BLE_MESH_MODEL_OPERATION_EVT` event with opcode `处理opcode为ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_STATUS` after successful call，`ESP_BLE_MESH_CLIENT_MODEL_SEND_TIMEOUT_EVT` is triggered when the call times out.
+The API of example_send_fast_prov_info_set will trigger `ESP_BLE_MESH_MODEL_OPERATION_EVT` event with opcode `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_STATUS` after successful call，`ESP_BLE_MESH_CLIENT_MODEL_SEND_TIMEOUT_EVT` is triggered when the call times out.
 
 ```c
 err = example_send_fast_prov_info_set(fast_prov_client.model, &info, &set);
