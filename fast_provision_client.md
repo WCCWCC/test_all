@@ -21,24 +21,20 @@ This demo has only one element, in which the following four models are implement
 ## 2. Code Analysis
 ### 2.1  Data Structure
 `example_prov_info_t` is used to control the keys, address range, and number of network nodes of the mesh network.
-```c
-typedef struct {
-    uint16_t net_idx;       /*  Netkey index value */
-    uint16_t app_idx;       /*  AppKey index value */
-    uint8_t  app_key[16];   /*  Use the same app_key throughout the network*/
 
-    uint16_t node_addr_cnt; /* Number of BLE Mesh nodes in the network，
-                               Consistent with the number of devices entered by the app */
-    uint16_t unicast_min;   /* Minimum unicast address to be assigned to the nodes in the network */
-    uint16_t unicast_max;   /* Maximum unicast address to be assigned to the nodes in the network */
-    uint16_t group_addr;    /* This group address is used to control the switch of all node lights 
-                                                                                at the same time. */
-    uint8_t  match_val[16]; /* Match value used by Fast Provisoning Provisioner */
-    uint8_t  match_len;
+| Name        |Description               |
+| ----------------------|------------------------- |
+| `net_idx`      | Netkey index value  |
+| `app_idx`      | AppKey index value  |
+| `app_key[16]`  | Use the same app_key throughout the network |
+| `node_addr_cnt`| Number of BLE Mesh nodes in the network，Consistent with the number of devices entered by the app |
+| `unicast_min` | Minimum unicast address to be assigned to the nodes in the network |
+| `unicast_max` | Maximum unicast address to be assigned to the nodes in the network |
+| `group_addr`| This group address is used to control the switch of all node lights at the same time.|
+| `match_val[16]`| Match value used by Fast Provisoning Provisioner  |
+| `match_len` | Length to match   |
+| `max_node_num`    | Maximum number of nodes can be provisioned by the client |
 
-    uint8_t  max_node_num;  /* Maximum number of nodes can be provisioned by the client */
-} __attribute__((packed)) example_prov_info_t;
-```
 ### 2.2  Code Flow
 I will follow the order in which the code runs，Introduce related events and APIs
 
