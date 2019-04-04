@@ -34,7 +34,7 @@ You can choose from the 4 message sequences described below:
 3. Unacknowledged Set
 4. Acknowledged Set with Periodic Publishing
 
-![Packet interaction](images/2.gif)
+![Packet interaction](images/22.png)
 
 ## 2. Code Analysis
 
