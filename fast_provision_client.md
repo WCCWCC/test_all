@@ -52,7 +52,15 @@ if (err != ESP_OK) {
     return ESP_FAIL;
 }
 ```
-Bind appkey for the provisioner's own mode.If you want to send a message between the server model and the client model of different nodes, you must first bind the appkey to the model.
+After the provisioner is initialized, there is no appkey. You need to add it through the api(`esp_ble_mesh_provisioner_add_local_app_key`) to make sure that the addition is successful.
+```c
+err = esp_ble_mesh_provisioner_add_local_app_key(prov_info.app_key, prov_info.net_idx, prov_info.app_idx);
+if (err != ESP_OK) {
+    ESP_LOGE(TAG, "%s: Failed to add local application key", __func__);
+    return ESP_FAIL;
+}
+```
+Bind appkey for the provisioner's own model.If you want to send a message between the server model and the client model of different nodes, you must first bind the appkey to the model.
 In this demo，appkey is bound to onoff client model and vender client model.
 The API of `esp_ble_mesh_provisioner_add_local_app_key` will trigger the `ESP_BLE_MESH_PROVISIONER_ADD_LOCAL_APP_KEY_COMP_EVT` event
 
@@ -73,7 +81,7 @@ if (err != ESP_OK) {
 ```
 ### 2.2.2 provisioning device
 Unprovisioned device will continuously send Unprovisioned Device beacon packets.The packet contains the value of uuid.If the uuid matches, the `ESP_BLE_MESH_PROVISIONER_RECV_UNPROV_ADV_PKT_EVT` event will be triggered.
-Add unprovisioned device info to the unprov_dev queue.
+In this event,provisioner will add unprovisioned device info to the unprov_dev queue.
 ```c
 err = esp_ble_mesh_provisioner_add_unprov_dev(&add_dev, flag);
 if (err != ESP_OK) {
@@ -110,8 +118,7 @@ return esp_ble_mesh_config_client_set_state(&common, &set);
 
 In this event (`ESP_BLE_MESH_CFG_CLIENT_SET_STATE_EVT`),The provisioner continues to send the cache information needed by the device to have the provisioning capabilities.The cached data type is defined in the structure (`example_fast_prov_info_set_t`).
 Now,The cached data required as a provisioner is sent.
-
-The API of example_send_fast_prov_info_set will trigger `ESP_BLE_MESH_MODEL_OPERATION_EVT` event with opcode `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_STATUS` after successful call，`ESP_BLE_MESH_CLIENT_MODEL_SEND_TIMEOUT_EVT` is triggered when the call times out.
+when the api (`example_send_fast_prov_info_set`) call times out,`ESP_BLE_MESH_CLIENT_MODEL_SEND_TIMEOUT_EVT` event will trigger.
 
 ```c
 err = example_send_fast_prov_info_set(fast_prov_client.model, &info, &set);
@@ -120,6 +127,9 @@ if (err != ESP_OK) {
     return;
 }
 ```
+Calling this api(`example_send_fast_prov_info_set`) will send a message with opcode `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_SET`.
+The response to this message will trigger `ESP_BLE_MESH_MODEL_OPERATION_EVT` event with opcode `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_STATUS` .
+
 ### 2.2.4 control node's light
 In this event (`ESP_BLE_MESH_MODEL_OPERATION_EVT`) and will receive message with opcode (`ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_STATUS`).
 The provisioner will start a timer，Used to get the address of all nodes in the mesh network.
