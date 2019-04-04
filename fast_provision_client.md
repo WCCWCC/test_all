@@ -1,10 +1,11 @@
 # 1. Introduction
 ## 1.1 Demo Function
-Provisioning an unprovisioned devices to become node.
 
-Bind appkey for the provisioner's own mode.
-
-Obtain the addresses of all nodes in the fast provision network and control the nodes through the group address.
+1. Provisioning an unprovisioned devices to become node.
+2. Binding appkey for the provisioner's own mode.
+3. sending the appkey add and fast prov info set messages to the node.
+4. Getting the addresses of all nodes in the fast provision network 
+5. controlling the nodes through the group address.
 
 **Note:The demo's functionality is consistent with the EspBleMesh app.**
 
@@ -13,7 +14,6 @@ This demo has only one element, in which the following four models are implement
 - **Configuration Server model**： This model is used to represent a mesh network configuration of a device.
 - **Configuration Client model**: This model is used to represent an element that can control and monitor the configuration of a node.
 - **Generic OnOff Client model** controls a Generic OnOff Server via messages defined by the Generic OnOff Model, that is, turning on and off the lights.
-
 - **Vender Client model**:This model is used to control the `fast_prov_server` state.
 
 **Note:The use of model can refer to the documentation of other demos.**
@@ -120,6 +120,8 @@ In this event (`ESP_BLE_MESH_CFG_CLIENT_SET_STATE_EVT`),The provisioner continue
 Now,The cached data required as a provisioner is sent.
 when the api (`example_send_fast_prov_info_set`) call times out,`ESP_BLE_MESH_CLIENT_MODEL_SEND_TIMEOUT_EVT` event will trigger.
 
+Calling this api(`example_send_fast_prov_info_set`) will send a message with opcode `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_SET`.
+The response to this message will trigger `ESP_BLE_MESH_MODEL_OPERATION_EVT` event with opcode `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_STATUS` .
 ```c
 err = example_send_fast_prov_info_set(fast_prov_client.model, &info, &set);
 if (err != ESP_OK) {
@@ -127,8 +129,7 @@ if (err != ESP_OK) {
     return;
 }
 ```
-Calling this api(`example_send_fast_prov_info_set`) will send a message with opcode `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_SET`.
-The response to this message will trigger `ESP_BLE_MESH_MODEL_OPERATION_EVT` event with opcode `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_STATUS` .
+**Note: The message with opcode (`ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_SET`) will contain a group address. When the node receives this message, it will automatically subscribe the onoff server model to this address.**
 
 ### 2.2.4 control node's light
 In this event (`ESP_BLE_MESH_MODEL_OPERATION_EVT`) and will receive message with opcode (`ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_STATUS`).
