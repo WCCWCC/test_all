@@ -10,10 +10,12 @@ wifi通过命令行的方式，实现了哪些wifi的命令
 
 //将关键的log粘贴出来
 
+# menuconfig 选项说明
+
 # 3. 添加新的wifi命令
 //这里需要将wifi的api粘贴出来
+
 
 # 4. 扩展蓝牙的功能。
 // 添加model
 
-# menuconfig 选项说明
