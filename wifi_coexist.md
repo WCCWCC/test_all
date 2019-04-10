@@ -76,11 +76,44 @@ void app_main(void)
 }
 ```
 ## board_init
-`Board_init` is used to initialize the gpio pin of the led light.Created a task (`led_action_thread`) for controlling led lights
+`board_init` starts by initializing the gpio pin of the led light.
+Initialize the `led_state[i].previous` value to `LED_OFF`.
+```c
+for (int i = 0; i < 3; i++) {
+    gpio_pad_select_gpio(led_state[i].pin);
+    gpio_set_direction(led_state[i].pin, GPIO_MODE_OUTPUT);
+    gpio_set_level(led_state[i].pin, LED_OFF);
+    led_state[i].previous = LED_OFF;
+}
+```
+`bluetooth_init` also created a task named `led_action_thread` to control the status of the light.
+`bluetooth_init` also created a queue named `led_action_queue` is used to store data.The format of the data is `struct _led_state`.
+```c
+led_action_queue = xQueueCreate(60, sizeof(struct _led_state));
+ret = xTaskCreate(led_action_thread, "led_action_thread", 4096, NULL, 5, NULL);
+```
+The task continuously gets data from the queue(`led_action_queue`).Set the state of the light by the value obtained from the queue
+Set the state of the light by calling the following function `gpio_set_level`.
+
+```c
+static void led_action_thread(void *arg)
+{
+    struct _led_state led = {0};
+
+    while (1) {
+        if (xQueueReceive(led_action_queue, &led, (portTickType)portMAX_DELAY)) {
+            ESP_LOGI(TAG, "%s: pin 0x%04x onoff 0x%02x", __func__, led.pin, led.current);
+            /* If the node is controlled by phone, add a delay when turn on/off led */
+            if (fast_prov_server.primary_role == true) {
+                vTaskDelay(50 / portTICK_PERIOD_MS);
+            }
+            gpio_set_level(led.pin, led.current);
+        }
+    }
+}
+```
 
 ## bluetooth_init
-
-
 `bluetooth_init` starts by initializing the non-volatile storage library. This library allows to save key-value pairs in flash memory and is used by some components such as the Wi-Fi library to save the SSID and password.You can use the option to configure menuconfig to save the node's key and configuration information. `Bluetooth Mesh support`  ---> `Store Bluetooth Mesh key and configuration persistently`:
 
 ```c
