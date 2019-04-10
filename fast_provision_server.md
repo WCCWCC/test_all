@@ -91,7 +91,7 @@ The variables that are related to the address management are described in the fo
 | `unicast_min`      | Minimum unicast address can be allocated to other nodes |
 | `unicast_max`      | Maximum unicast address can be allocated to other nodes |
 | `unicast_cur`      | Current unicast address |
-| `unicast_step`     | Unicast address change step（查一下这个到底是啥意思）|
+| `unicast_step`     | Unicast address change step Offset|
 
 #### 2.1.3 Provisioner Cache Data
 
@@ -335,13 +335,8 @@ static esp_ble_mesh_elem_t elements[] = {
 | ------------- | ------------|------------------------------------------- |
 |ESP_BLE_MESH_SET_FAST_PROV_INFO_COMP_EVT| NA| This event is triggered when the `esp_ble_mesh_set_fast_prov_info` API is called.  |
 |ESP_BLE_MESH_SET_FAST_PROV_ACTION_COMP_EVT| NA| This event is triggered when the `esp_ble_mesh_set_fast_prov_action` API is called. |
-
-* The **Generic OnOff Server** model
-
-| Event Name    | Opcode      |Description                                 |
-| ------------- | ------------|------------------------------------------- |
-|ESP_BLE_MESH_CFG_CLIENT_SET_STATE_EVT|ESP_BLE_MESH_MODEL_OP_APP_KEY_ADD|This event is triggered when the **Generic OnOff Server** model receives （增加 message 名称）and further triggers an API calling to send `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_SET` message. |
-|ESP_BLE_MESH_CFG_CLIENT_TIMEOUT_EVT|ESP_BLE_MESH_MODEL_OP_APP_KEY_ADD|This event is triggered when the API（增加 API 名称）times out.|
+|ESP_BLE_MESH_CFG_CLIENT_SET_STATE_EVT|ESP_BLE_MESH_MODEL_OP_APP_KEY_ADD|This event is triggered when the **Configuration Server** model receives and further triggers an API calling to send `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_SET` message. |
+|ESP_BLE_MESH_CFG_CLIENT_TIMEOUT_EVT|ESP_BLE_MESH_MODEL_OP_APP_KEY_ADD|This event is triggered when the API `example_send_config_appkey_add` times out.|
 
 #### 2.4.2 The Vendor Client model
 
@@ -360,7 +355,7 @@ static esp_ble_mesh_elem_t elements[] = {
 | ESP_BLE_MESH_MODEL_OPERATION_EVT   | ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_STATUS  | This event is triggered when the **Vendor Client** model receives the `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_STATUS` message.|
 | ESP_BLE_MESH_MODEL_OPERATION_EVT   | ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_NET_KEY_STATUS | This event is triggered when the **Vendor Client** model receives the `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_NET_KEY_STATUS` message.|
 | ESP_BLE_MESH_MODEL_OPERATION_EVT   | ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_NODE_ADDR_ACK  | This event is triggered when the **Vendor Client** model receives the `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_NODE_ADDR_ACK` message |
-| ESP_BLE_MESH_CLIENT_MODEL_SEND_TIMEOUT_EVT     | client_send_timeout.opcode    | This event is triggered when the API（增加 API 名称）times out.|
+| ESP_BLE_MESH_CLIENT_MODEL_SEND_TIMEOUT_EVT     | client_send_timeout.opcode    | This event is triggered when the API `esp_ble_mesh_client_model_send_msg` times out.|
 
 ### 2.5 Message Sending
 #### 2.5.1 The Vendor Client sends messages
@@ -406,8 +401,7 @@ esp_ble_mesh_server_model_send_msg(model, ctx, ESP_BLE_MESH_VND_MODEL_OP_FAST_PR
 The **Vendor Server** model calls the `esp_ble_mesh_model_publish` API to publish messages. Only the models that have subscribed to this destination address receive the published messages.
 
 ```c
-err = esp_ble_mesh_model_publish(model, ESP_BLE_MESH_MODEL_OP_GEN_ONOFF_STATUS,
-                                 sizeof(led->current), &led->current, ROLE_NODE);
+esp_err_t esp_ble_mesh_model_publish(esp_ble_mesh_model_t *model, uint32_t opcode,
+                                     uint16_t length, uint8_t *data,
+                                     esp_ble_mesh_dev_role_t device_role);
 ```
-
-(检查上方代码中的参数)
