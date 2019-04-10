@@ -90,7 +90,7 @@ if (err != ESP_OK) {
     return ESP_FAIL;
 }
 ```
-Please check the return value of the API calling and the return value of 增加event名称, and make sure that the Appkey has been added to this provisioner.
+Please check the return value of the API calling and the return value of `ESP_BLE_MESH_PROVISIONER_ADD_LOCAL_APP_KEY_COMP_EVT`, and make sure that the Appkey has been added to this provisioner.
 
 #### 2.2.1.3 Bind Appkey to local model
 
@@ -196,7 +196,7 @@ if (err != ESP_OK) {
 }
 ```
 
-After that, the provisioner will receive an acknowledgement, which is a message with an opcode of `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_NODE_ADDR_STATUS`, which triggers the (查下事件名称) event.
+After that, the provisioner will receive an acknowledgement, which is a message with an opcode of `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_NODE_ADDR_STATUS`, which triggers the `ESP_BLE_MESH_MODEL_OPERATION_EVT` event.
 
 Then, the provisioner is able to turn on all the nodes (which are lights in this demo) by calling the `example_send_generic_onoff_set` function using the group address.
 
