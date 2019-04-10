@@ -75,3 +75,131 @@ void app_main(void)
     wifi_console_init();
 }
 ```
+## Ble Mesh Init
+```c
+static esp_err_t ble_mesh_init(void)
+{
+    esp_err_t err;
+
+    /* First two bytes of device uuid is compared with match value by Provisioner */
+    memcpy(dev_uuid + 2, esp_bt_dev_get_address(), 6);
+
+    esp_ble_mesh_register_prov_callback(example_ble_mesh_provisioning_cb);
+    esp_ble_mesh_register_custom_model_callback(example_ble_mesh_custom_model_cb);
+    esp_ble_mesh_register_config_client_callback(example_ble_mesh_config_client_cb);
+    esp_ble_mesh_register_config_server_callback(example_ble_mesh_config_server_cb);
+
+    err = esp_ble_mesh_init(&prov, &comp);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "%s: Failed to initialize BLE Mesh", __func__);
+        return err;
+    }
+
+    err = example_fast_prov_server_init(&vnd_models[0]);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "%s: Failed to initialize fast prov server model", __func__);
+        return err;
+    }
+
+    err = esp_ble_mesh_client_model_init(&vnd_models[1]);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "%s: Failed to initialize fast prov client model", __func__);
+        return err;
+    }
+
+    k_delayed_work_init(&send_self_prov_node_addr_timer, example_send_self_prov_node_addr);
+
+    err = esp_ble_mesh_node_prov_enable(ESP_BLE_MESH_PROV_ADV | ESP_BLE_MESH_PROV_GATT);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "%s: Failed to enable node provisioning", __func__);
+        return err;
+    }
+
+    ESP_LOGI(TAG, "BLE Mesh Wi-Fi Coexist Node initialized");
+
+    board_led_operation(LED_B, LED_ON);
+
+    return ESP_OK;
+}
+```
+## Wifi Console Init
+```c
+static void wifi_console_init(void)
+{
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        ret = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK( ret );
+
+    initialise_wifi();
+    initialize_console();
+
+    /* Register commands */
+    esp_console_register_help_command();
+    register_wifi();
+
+    /* Prompt to be printed before each line.
+     * This can be customized, made dynamic, etc.
+     */
+    const char *prompt = LOG_COLOR_I "esp32> " LOG_RESET_COLOR;
+
+    printf("\n ==================================================\n");
+    printf(" |       Steps to test WiFi throughput            |\n");
+    printf(" |                                                |\n");
+    printf(" |  1. Print 'help' to gain overview of commands  |\n");
+    printf(" |  2. Configure device to station or soft-AP     |\n");
+    printf(" |  3. Setup WiFi connection                      |\n");
+    printf(" |  4. Run iperf to test UDP/TCP RX/TX throughput |\n");
+    printf(" |                                                |\n");
+    printf(" =================================================\n\n");
+
+    /* Figure out if the terminal supports escape sequences */
+    int probe_status = linenoiseProbe();
+    if (probe_status) { /* zero indicates success */
+        printf("\n"
+               "Your terminal application does not support escape sequences.\n"
+               "Line editing and history features are disabled.\n"
+               "On Windows, try using Putty instead.\n");
+        linenoiseSetDumbMode(1);
+#if CONFIG_LOG_COLORS
+        /* Since the terminal doesn't support escape sequences,
+         * don't use color codes in the prompt.
+         */
+        prompt = "esp32> ";
+#endif //CONFIG_LOG_COLORS
+    }
+
+    /* Main loop */
+    while (true) {
+        /* Get a line using linenoise.
+         * The line is returned when ENTER is pressed.
+         */
+        char *line = linenoise(prompt);
+        if (line == NULL) { /* Ignore empty lines */
+            continue;
+        }
+        /* Add the command to the history */
+        linenoiseHistoryAdd(line);
+
+        /* Try to run the command */
+        int ret;
+        esp_err_t err = esp_console_run(line, &ret);
+        if (err == ESP_ERR_NOT_FOUND) {
+            printf("Unrecognized command\n");
+        } else if (err == ESP_OK && ret != ESP_OK) {
+            printf("Command returned non-zero error code: 0x%x\n", ret);
+        } else if (err != ESP_OK) {
+            printf("Internal error: %s\n", esp_err_to_name(err));
+        }
+        /* linenoise allocates line buffer on the heap, so need to free it */
+        linenoiseFree(line);
+    }
+
+    return;
+
+}
+```
+
+
