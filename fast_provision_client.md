@@ -1,46 +1,74 @@
 # 1. Introduction
 ## 1.1 Demo Function
 
-1. Provisioning an unprovisioned devices to become node.
-2. Binding appkey for the provisioner's own mode.
-3. sending the appkey add and fast prov info set messages to the node.
-4. Getting the addresses of all nodes in the fast provision network 
-5. controlling the nodes through the group address.
+This demo completes the following functions:
 
-**Note:The demo's functionality is consistent with the EspBleMesh app.**
+1. Provisioning an unprovisioned device and change it to a node.
+2. Binding the provisioner's Appkey to its own models.
+3. Sending messages to the node about the Appkey and the fast provisioning information.
+4. Getting the addresses of all the nodes in the fast provisioning network. 
+5. Controlling the nodes by their group address.
+
+**Note: The demo's functionality is similar to that of the EspBleMesh app.**
 
 ## 1.2 Node Composition
-This demo has only one element, in which the following four models are implemented:
-- **Configuration Server model**： This model is used to represent a mesh network configuration of a device.
-- **Configuration Client model**: This model is used to represent an element that can control and monitor the configuration of a node.
-- **Generic OnOff Client model** controls a Generic OnOff Server via messages defined by the Generic OnOff Model, that is, turning on and off the lights.
-- **Vender Client model**:This model is used to control the `fast_prov_server` state.
 
-**Note:The use of model can refer to the documentation of other demos.**
+This demo has only one element, in which the following four models are implemented:
+
+- The **Configuration Server** model is used to represent a mesh network configuration of a device.
+- The **Configuration Client** model is used to represent an element that can control and monitor the configuration of a node.
+- The **Generic OnOff Client** model controls a Generic OnOff Server via messages defined by the **Generic OnOff** model (turning on and off the lights in this demo).
+- The **Vendor Client** model is used to control the `fast_prov_server` state, which defines the fast provisioning behavior of a node.
+
+**Note: For detailed information about these models, please refer to other BLE Mesh demos.**
 
 ## 2. Code Analysis
+
 ### 2.1  Data Structure
-`example_prov_info_t` is used to control the keys, address range, and number of network nodes of the mesh network.
+
+`example_prov_info_t` is used to define the keys, the address range can be assigned by a node, and the maximum number of nodes supported by the mesh network.
 
 | Name        |Description               |
 | ----------------------|------------------------- |
 | `net_idx`      | Netkey index value  |
 | `app_idx`      | AppKey index value  |
-| `app_key[16]`  | Use the same app_key throughout the network |
-| `node_addr_cnt`| Number of BLE Mesh nodes in the network，Consistent with the number of devices entered by the app |
-| `unicast_min` | Minimum unicast address to be assigned to the nodes in the network |
-| `unicast_max` | Maximum unicast address to be assigned to the nodes in the network |
-| `group_addr`| This group address is used to control the switch of all node lights at the same time.|
-| `match_val[16]`| Match value used by Fast Provisoning Provisioner  |
-| `match_len` | Length to match   |
-| `max_node_num`    | Maximum number of nodes can be provisioned by the client |
+| `app_key[16]`  | Appkey, which is used throughout the network |
+| `node_addr_cnt`| The maximum number of nodes supported in the mesh network，which serves the same purpose of the `Fast provisioning count` parameter in the EspBleMesh app|
+| `unicast_min` | Minimum unicast address to be assigned to the nodes in the mesh network |
+| `unicast_max` | Maximum unicast address to be assigned to the nodes in the mesh network |
+| `group_addr`| The group address, which is used to control the on/off state of all nodes in the mesh network, that is said, turning on and off the lights in this demo|
+| `match_val[16]`| The value used by the Fast Provisioning Provisioner to filter the devices to be provisioned  |
+| `match_len` | The maximum length of `match_val[16]` |
+| `max_node_num`    | The maximum number of nodes can be provisioned by the client |
 
 ### 2.2  Code Flow
-I will follow the order in which the code runs，Introduce related events and APIs
 
-### 2.2.1 ble_mesh_init 
+The events and APIs in this section are presented in the same order with code execution.
 
-Filter received uuid values by setting match values. Uuid has 16 bytes and sets the matching value of the corresponding byte. If the uuid matches, the `ESP_BLE_MESH_PROVISIONER_RECV_UNPROV_ADV_PKT_EVT` event will be triggered.If the uuid not matches,The uuid of the unprovisioned device will be ignored.
+### 2.2.1 Initialization
+
+#### 2.2.1.1 Set the UUID Filter
+
+The `esp_ble_mesh_provisioner_set_dev_uuid_match` API is called by the provisioner to set the part of the device UUID to be compared before starting to provision. 
+
+```
+/**
+ * @brief         This function is called by Provisioner to set the part of the device UUID
+ *                to be compared before starting to provision.
+ *
+ * @param[in]     match_val: Value to be compared with the part of the device UUID.
+ * @param[in]     match_len: Length of the compared match value.
+ * @param[in]     offset: Offset of the device UUID to be compared (based on zero).
+ * @param[in]     prov_after_match: Flag used to indicate whether provisioner should start to provision
+ *                                  the device immediately if the part of the UUID matches.
+ *
+ * @return        ESP_OK on success or error code otherwise.
+ *
+ */
+esp_err_t esp_ble_mesh_provisioner_set_dev_uuid_match(const uint8_t *match_val, uint8_t match_len,
+        uint8_t offset, bool prov_after_match);
+```
+
 ```c
 err = esp_ble_mesh_provisioner_set_dev_uuid_match(match, 0x02, 0x00, false);
 if (err != ESP_OK) {
@@ -48,7 +76,13 @@ if (err != ESP_OK) {
     return ESP_FAIL;
 }
 ```
-After the provisioner is initialized, there is no appkey. You need to add it through the api(`esp_ble_mesh_provisioner_add_local_app_key`) to make sure that the addition is successful.
+
+
+
+#### 2.2.1.2 Add local Appkey
+
+The provisioner has no Appkey right after it has been initialized. Therefore, you have to add a local Appkey for the provisioner by calling the `esp_ble_mesh_provisioner_add_local_app_key`. 
+
 ```c
 err = esp_ble_mesh_provisioner_add_local_app_key(prov_info.app_key, prov_info.net_idx, prov_info.app_idx);
 if (err != ESP_OK) {
@@ -56,9 +90,11 @@ if (err != ESP_OK) {
     return ESP_FAIL;
 }
 ```
-Bind appkey for the provisioner's own model.If you want to send a message between the server model and the client model of different nodes, you must first bind the appkey to the model.
-In this demo，appkey is bound to onoff client model and vender client model.
-The API of `esp_ble_mesh_provisioner_add_local_app_key` will trigger the `ESP_BLE_MESH_PROVISIONER_ADD_LOCAL_APP_KEY_COMP_EVT` event
+Please check the return value of the API calling and the return value of 增加event名称, and make sure that the Appkey has been added to this provisioner.
+
+#### 2.2.1.3 Bind Appkey to local model
+
+To control the server model, the client model uses messages to control the server model and these message must be encrypted by the Appkey. To that end, users must bind the Appkey of the provisioner to its local models, which are the **Generic OnOff Client** model and the **Vendor Client** model, by calling the `esp_ble_mesh_provisioner_add_local_app_key` api. 
 
 ```c
 prov_info.app_idx = param->provisioner_add_app_key_comp.app_idx;
@@ -75,28 +111,37 @@ if (err != ESP_OK) {
     return;
 }
 ```
-### 2.2.2 provisioning device
-Unprovisioned device will continuously send Unprovisioned Device beacon packets.The packet contains the value of uuid.If the uuid matches, the `ESP_BLE_MESH_PROVISIONER_RECV_UNPROV_ADV_PKT_EVT` event will be triggered.
-In this event,provisioner will add unprovisioned device info to the unprov_dev queue.
-```c
-err = esp_ble_mesh_provisioner_add_unprov_dev(&add_dev, flag);
-if (err != ESP_OK) {
-    ESP_LOGE(TAG, "%s: Failed to start provisioning a device", __func__);
-    return;
-}
+Please check the return value of the API calling and the return value of the `ESP_BLE_MESH_PROVISIONER_ADD_LOCAL_APP_KEY_COMP_EVT` event, and make sure that the Appkey has been binded to the local models.
 
-if (!reprov) {
-    if (prov_info.max_node_num) {
-         prov_info.max_node_num--;
-}
-}
-```
-### 2.2.3 send cache data
-If provisioner provisioning done,This event will be triggered `ESP_BLE_MESH_PROVISIONER_PROV_COMPLETE_EVT`
-In this event,Add appkey to node's config server model.Appkey is one of the data that needs to be cached as a provisioner.
-If a device wants to have the ability to provisioning other unprovisioned device，It must have the corresponding cached data.
 
-The API of esp_ble_mesh_config_client_set_state will trigger `ESP_BLE_MESH_CFG_CLIENT_SET_STATE_EVT` event after successful call，`ESP_BLE_MESH_CFG_CLIENT_TIMEOUT_EVT` is triggered when the call times out.
+### 2.2.2 Provisioning a device
+
+The unprovisioned devices continuously send the **Unprovisioned Device** beacon, which contains the value of its UUID. 
+
+* If the UUID matched, a `ESP_BLE_MESH_PROVISIONER_RECV_UNPROV_ADV_PKT_EVT` event will be triggered, which will add the unprovisioned device information to the queue of to-be-provisioned devices.
+
+	```c
+	err = esp_ble_mesh_provisioner_add_unprov_dev(&add_dev, flag);
+	if (err != ESP_OK) {
+   		ESP_LOGE(TAG, "%s: Failed to start provisioning a device", __func__);
+    	return;
+	}
+
+	if (!reprov) {
+   		if (prov_info.max_node_num) {
+        	prov_info.max_node_num--;
+	}
+	}
+	```
+* If not, this device will be ignored.
+
+After that, all the devices in the queue will be provisioned automatically.
+
+### 2.2.3 Sending cache data
+
+Appkey is among the cache required for this node to become a provisioner.
+
+When the provisioning completes, an `ESP_BLE_MESH_PROVISIONER_PROV_COMPLETE_EVT` event will be triggered, which will add the Appkey to the node's **Config Server** model by calling the `esp_ble_mesh_config_client_set_state` API:
 
 ```c
 common.opcode       = ESP_BLE_MESH_MODEL_OP_APP_KEY_ADD;
@@ -112,24 +157,26 @@ common.msg_role     = info->role;
 return esp_ble_mesh_config_client_set_state(&common, &set);
 ```
 
-In this event (`ESP_BLE_MESH_CFG_CLIENT_SET_STATE_EVT`),The provisioner continues to send the cache information needed by the device to have the provisioning capabilities.The cached data type is defined in the structure (`example_fast_prov_info_set_t`).
-Now,The cached data required as a provisioner is sent.
-when the api (`example_send_fast_prov_info_set`) call times out,`ESP_BLE_MESH_CLIENT_MODEL_SEND_TIMEOUT_EVT` event will trigger.
+* If API calling succeeds, an `ESP_BLE_MESH_CFG_CLIENT_SET_STATE_EVT` event will be triggered, which sends other cache information (`example_fast_prov_info_set_t`) to the node's **Vendor Server** model by calling the `example_send_fast_prov_info_set` function;
+	* If API calling (`example_send_fast_prov_info_set`) succeeded, a message with an opcode of `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_SET` will be sent, whose acknowledgement (with an opcode of `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_STATUS`) will further trigger an `ESP_BLE_MESH_MODEL_OPERATION_EVT` event  
+		```c
+		err = example_send_fast_prov_info_set(fast_prov_client.model, &info, &set);
+		if (err != ESP_OK) {
+    		ESP_LOGE(TAG, "%s: Failed to set Fast Prov Info Set message", __func__);
+    	return;
+		}
+		```
+	* If API calling (`example_send_fast_prov_info_set`) times out, an `ESP_BLE_MESH_CLIENT_MODEL_SEND_TIMEOUT_EVT` event will be triggered.  
+* If API calling times out, an `ESP_BLE_MESH_CFG_CLIENT_TIMEOUT_EVT` event is triggered.
 
-Calling this api(`example_send_fast_prov_info_set`) will send a message with opcode `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_SET`.
-The response to this message will trigger `ESP_BLE_MESH_MODEL_OPERATION_EVT` event with opcode `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_STATUS` .
-```c
-err = example_send_fast_prov_info_set(fast_prov_client.model, &info, &set);
-if (err != ESP_OK) {
-    ESP_LOGE(TAG, "%s: Failed to set Fast Prov Info Set message", __func__);
-    return;
-}
-```
-**Note: The message with opcode (`ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_SET`) will contain a group address. When the node receives this message, it will automatically subscribe the onoff server model to this address.**
+After that, this node has the ability to provisioning other nodes as a provisioner, and further controls other nodes.
 
-### 2.2.4 control node's light
-In this event (`ESP_BLE_MESH_MODEL_OPERATION_EVT`) and will receive message with opcode (`ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_STATUS`).
-The provisioner will start a timer，Used to get the address of all nodes in the mesh network.
+**Note: The message with an opcode of `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_INFO_SET` contains the group address of all the nodes. When a node receives this message, it will automatically subscribe the Onoff Server model of this address.**
+
+### 2.2.4 Controlling the node
+
+When the `ESP_BLE_MESH_MODEL_OPERATION_EVT` event is triggered, the provisioner starts a timer.  
+
 ```c
         ESP_LOG_BUFFER_HEX("fast prov info status", data, len);
 #if !defined(CONFIG_BT_MESH_FAST_PROV)
@@ -139,7 +186,8 @@ The provisioner will start a timer，Used to get the address of all nodes in the
 #endif
         break;
 ```
-Behavior after the timer expires,The provisioner will send a message with opcode. (`ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_NODE_ADDR_GET`)
+After the timers times out, the provisioner starts to get the addresses of all nodes in the mesh network by calling the `example_send_fast_prov_all_node_addr_get` function, which sends a message with an opcode of `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_NODE_ADDR_GET`.
+
 ```c
 err = example_send_fast_prov_all_node_addr_get(model, &info);
 if (err != ESP_OK) {
@@ -148,8 +196,9 @@ if (err != ESP_OK) {
 }
 ```
 
-The provisioner will receive a acknowledge. A message with opcode(`ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_NODE_ADDR_STATUS`).
-The provisioner will turn on the lights of all nodes by group address.
+After that, the provisioner will receive an acknowledgement, which is a message with an opcode of `ESP_BLE_MESH_VND_MODEL_OP_FAST_PROV_NODE_ADDR_STATUS`, which triggers the (查下事件名称) event.
+
+Then, the provisioner is able to turn on all the nodes (which are lights in this demo) by calling the `example_send_generic_onoff_set` function using the group address.
 
 ```c
 example_msg_common_info_t info = {
