@@ -2,9 +2,7 @@
 ## 1.1 Demo Function
 
 1. This is a demo that wifi and bluetooth coexist.You can use the wifi function while operating Bluetooth.
-
 2. wifi function in this demo: Testing the transfer rate of wifi by `iperf`.
-
 3. bluetooth function in this demo:The function of Bluetooth is the function of `ble_mesh_fast_prov_server`.
 
 # 2. How to use this demo
@@ -207,7 +205,12 @@ esp_ble_mesh_register_prov_callback(example_ble_mesh_provisioning_cb);
 - `esp_ble_mesh_init(&prov, &comp)` ：Initialize BLE Mesh module.This API initializes provisioning capabilities and composition data information.Registered information is stored in the structure `prov`.The structure `prov` is essentially a composition of one or more models.
 
 ## wifi_console_init
-`wifi_console_init` starts by initializing 
+`wifi_console_init` starts by initializing basic functions of wifi.
+Set current WiFi power save type `WIFI_PS_MIN_MODEM`.In this mode, station wakes up to receive beacon every DTIM period
+Set the WiFi API configuration storage type `WIFI_STORAGE_RAM`. all configuration will only store in the memory
+Set the WiFi operating mode `WIFI_MODE_STA`. Wifi will work in station mode.
+
+
 先执行wifi的标准化初始程序，用户应该关心wifi的工作模式，和一些关键参数。
 
 举例讲解创建了哪些命令，并举例命令如何创建自定义命令。
