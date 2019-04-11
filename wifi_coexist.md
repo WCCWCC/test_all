@@ -210,11 +210,8 @@ Set current WiFi power save type `WIFI_PS_MIN_MODEM`.In this mode, station wakes
 Set the WiFi API configuration storage type `WIFI_STORAGE_RAM`. all configuration will only store in the memory
 Set the WiFi operating mode `WIFI_MODE_STA`. Wifi will work in station mode.
 
-
 `register_wifi` registered the following commands: `sta`,`scan`,`ap`,`query`,`iperf`,`restart`,`heap`.
 
-
-举例讲解创建了哪些命令，并举例命令如何创建自定义命令。
 ```c
     initialise_wifi();
     initialize_console();
@@ -223,7 +220,8 @@ Set the WiFi operating mode `WIFI_MODE_STA`. Wifi will work in station mode.
     esp_console_register_help_command();
     register_wifi();
 ```
-先讲解命令是如何执行的，如何再讲解如何调用wifi的api。
+
+The main program constantly reads data from the command line.`esp_console_run` will parse the argument and call the callback function of the previously initialized command.
 ```c
     /* Main loop */
     while (true) {
