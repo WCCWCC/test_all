@@ -172,34 +172,40 @@ static esp_err_t ble_mesh_init(void)
         ESP_LOGE(TAG, "%s: Failed to initialize BLE Mesh", __func__);
         return err;
     }
-
-    err = example_fast_prov_server_init(&vnd_models[0]);
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG, "%s: Failed to initialize fast prov server model", __func__);
-        return err;
-    }
-
-    err = esp_ble_mesh_client_model_init(&vnd_models[1]);
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG, "%s: Failed to initialize fast prov client model", __func__);
-        return err;
-    }
-
-    k_delayed_work_init(&send_self_prov_node_addr_timer, example_send_self_prov_node_addr);
-
-    err = esp_ble_mesh_node_prov_enable(ESP_BLE_MESH_PROV_ADV | ESP_BLE_MESH_PROV_GATT);
-    if (err != ESP_OK) {
-        ESP_LOGE(TAG, "%s: Failed to enable node provisioning", __func__);
-        return err;
-    }
-
-    ESP_LOGI(TAG, "BLE Mesh Wi-Fi Coexist Node initialized");
-
-    board_led_operation(LED_B, LED_ON);
+    ...
 
     return ESP_OK;
 }
 ```
+`ble_mesh_init` starts by initializing the device's uuid (`dev_uuid`).Uuid is used to distinguish devices when provisioning.
+
+- `esp_ble_mesh_register_prov_callback(esp_ble_mesh_prov_cb)`: registers the provisioning callback function in the BLE Mesh stack.`esp_ble_mesh_prov_cb` is used to handle events thrown by protocol stations.This requires the user to implement it himself, and also needs to know the meaning of the event and how to trigger it.
+For example: The event `ESP_BLE_MESH_PROVISIONER_PROV_LINK_OPEN_EVT`will trigger when provisioner start provisioning unprovisioned device. If you want to handle this event,You need to implement the handler for this event `example_ble_mesh_provisioning_cb`.You also need to register this event handler with the protocol station by calling the API `esp_ble_mesh_register_prov_callback`.
+```c
+ESP_BLE_MESH_PROVISIONER_PROV_LINK_OPEN_EVT,                /*!< Provisioner establish a BLE Mesh link event */
+
+static void example_ble_mesh_provisioning_cb(esp_ble_mesh_prov_cb_event_t event,
+        esp_ble_mesh_prov_cb_param_t *param)
+{
+    esp_err_t err;
+    
+    switch (event) {
+    case  :
+        ESP_LOGI(TAG, "ESP_BLE_MESH_PROVISIONER_PROV_LINK_OPEN_EVT");
+        provisioner_prov_link_open(param->provisioner_prov_link_open.bearer);
+        break;
+    }
+}
+esp_ble_mesh_register_prov_callback(example_ble_mesh_provisioning_cb);
+```
+- `esp_ble_mesh_register_custom_model_callback(esp_ble_mesh_model_cb)`: Register BLE Mesh callback for user-defined models' operations. 
+- `esp_ble_mesh_register_config_client_callback(example_ble_mesh_config_client_cb)`:Register BLE Mesh Config Client Model callback.
+- `esp_ble_mesh_register_config_server_callback(example_ble_mesh_config_server_cb)`:Register BLE Mesh Config Server Model callback.
+
+- `esp_ble_mesh_init(&prov, &comp)` ：Initialize BLE Mesh module.This API initializes provisioning capabilities and composition data information.Registered information is stored in the structure `prov`.The structure `prov` is essentially a composition of one or more models.
+
+
+
 ## wifi_console_init
 ```c
 static void wifi_console_init(void)
