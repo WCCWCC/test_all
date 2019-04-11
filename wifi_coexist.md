@@ -211,7 +211,8 @@ Set the WiFi API configuration storage type `WIFI_STORAGE_RAM`. all configuratio
 Set the WiFi operating mode `WIFI_MODE_STA`. Wifi will work in station mode.
 
 
-先执行wifi的标准化初始程序，用户应该关心wifi的工作模式，和一些关键参数。
+`register_wifi` registered the following commands: `sta`,`scan`,`ap`,`query`,`iperf`,`restart`,`heap`.
+
 
 举例讲解创建了哪些命令，并举例命令如何创建自定义命令。
 ```c
