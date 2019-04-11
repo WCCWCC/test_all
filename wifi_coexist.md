@@ -46,6 +46,9 @@ Note:`iperf` is a network performance testing tool. Iperf can test maximum TCP a
 # Example Walkthrough
 ## Main Entry Point
 The program’s entry point is the app_main() function:
+
+Initialize bluetooth related functions, then initialize the wifi console.
+
 ```c
 void app_main(void)
 {
@@ -173,7 +176,6 @@ static esp_err_t ble_mesh_init(void)
         return err;
     }
     ...
-
     return ESP_OK;
 }
 ```
@@ -204,57 +206,18 @@ esp_ble_mesh_register_prov_callback(example_ble_mesh_provisioning_cb);
 
 - `esp_ble_mesh_init(&prov, &comp)` ：Initialize BLE Mesh module.This API initializes provisioning capabilities and composition data information.Registered information is stored in the structure `prov`.The structure `prov` is essentially a composition of one or more models.
 
-
-
 ## wifi_console_init
+`wifi_console_init` starts by initializing 
 ```c
-static void wifi_console_init(void)
-{
-    esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-        ESP_ERROR_CHECK(nvs_flash_erase());
-        ret = nvs_flash_init();
-    }
-    ESP_ERROR_CHECK( ret );
-
     initialise_wifi();
     initialize_console();
 
     /* Register commands */
     esp_console_register_help_command();
     register_wifi();
+```
 
-    /* Prompt to be printed before each line.
-     * This can be customized, made dynamic, etc.
-     */
-    const char *prompt = LOG_COLOR_I "esp32> " LOG_RESET_COLOR;
-
-    printf("\n ==================================================\n");
-    printf(" |       Steps to test WiFi throughput            |\n");
-    printf(" |                                                |\n");
-    printf(" |  1. Print 'help' to gain overview of commands  |\n");
-    printf(" |  2. Configure device to station or soft-AP     |\n");
-    printf(" |  3. Setup WiFi connection                      |\n");
-    printf(" |  4. Run iperf to test UDP/TCP RX/TX throughput |\n");
-    printf(" |                                                |\n");
-    printf(" =================================================\n\n");
-
-    /* Figure out if the terminal supports escape sequences */
-    int probe_status = linenoiseProbe();
-    if (probe_status) { /* zero indicates success */
-        printf("\n"
-               "Your terminal application does not support escape sequences.\n"
-               "Line editing and history features are disabled.\n"
-               "On Windows, try using Putty instead.\n");
-        linenoiseSetDumbMode(1);
-#if CONFIG_LOG_COLORS
-        /* Since the terminal doesn't support escape sequences,
-         * don't use color codes in the prompt.
-         */
-        prompt = "esp32> ";
-#endif //CONFIG_LOG_COLORS
-    }
-
+```c
     /* Main loop */
     while (true) {
         /* Get a line using linenoise.
@@ -280,9 +243,7 @@ static void wifi_console_init(void)
         /* linenoise allocates line buffer on the heap, so need to free it */
         linenoiseFree(line);
     }
-
     return;
-
 }
 ```
 
