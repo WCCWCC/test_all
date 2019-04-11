@@ -1,11 +1,11 @@
 # 1. Introduction
 ## 1.1 Demo Function
 
-This is a demo that wifi and bluetooth coexist.
+1. This is a demo that wifi and bluetooth coexist.You can use the wifi function while operating Bluetooth.
 
-Testing the transfer rate of wifi when Bluetooth is working properly.
+2. wifi function in this demo: Testing the transfer rate of wifi by `iperf`.
 
-The function of Bluetooth is the function of `ble_mesh_fast_prov_server`.
+3. bluetooth function in this demo:The function of Bluetooth is the function of `ble_mesh_fast_prov_server`.
 
 # 2. How to use this demo
 You need to download the project(`ble_mesh_wifi_coexist`) code to board.
@@ -208,6 +208,9 @@ esp_ble_mesh_register_prov_callback(example_ble_mesh_provisioning_cb);
 
 ## wifi_console_init
 `wifi_console_init` starts by initializing 
+先执行wifi的标准化初始程序，用户应该关心wifi的工作模式，和一些关键参数。
+
+举例讲解创建了哪些命令，并举例命令如何创建自定义命令。
 ```c
     initialise_wifi();
     initialize_console();
@@ -216,7 +219,7 @@ esp_ble_mesh_register_prov_callback(example_ble_mesh_provisioning_cb);
     esp_console_register_help_command();
     register_wifi();
 ```
-
+先讲解命令是如何执行的，如何再讲解如何调用wifi的api。
 ```c
     /* Main loop */
     while (true) {
