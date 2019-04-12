@@ -5,6 +5,8 @@
 2. wifi function in this demo: Testing the transfer rate of wifi by `iperf`.
 3. bluetooth function in this demo:The function of Bluetooth is the function of `ble_mesh_fast_prov_server`.
 
+Noet:In this demo,you call wifi API and bluetooth API.such as `wifi_get_local_ip` and `esp_ble_mesh_provisioner_add_unprov_dev`.
+
 # 2. How to use this demo
 You need to download the project(`ble_mesh_wifi_coexist`) code to board.
 Enter the following command by connecting to the borad terminal：
@@ -210,6 +212,7 @@ Set current WiFi power save type `WIFI_PS_MIN_MODEM`.In this mode, station wakes
 Set the WiFi API configuration storage type `WIFI_STORAGE_RAM`. all configuration will only store in the memory
 Set the WiFi operating mode `WIFI_MODE_STA`. Wifi will work in station mode.
 
+Wifi is used by console command line.
 `register_wifi` registered the following commands: `sta`,`scan`,`ap`,`query`,`iperf`,`restart`,`heap`.
 
 ```c
@@ -220,7 +223,6 @@ Set the WiFi operating mode `WIFI_MODE_STA`. Wifi will work in station mode.
     esp_console_register_help_command();
     register_wifi();
 ```
-
 The main program constantly reads data from the command line.`esp_console_run` will parse the argument and call the callback function of the previously initialized command.
 ```c
     /* Main loop */
