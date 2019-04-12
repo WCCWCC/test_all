@@ -212,7 +212,7 @@ Set current WiFi power save type `WIFI_PS_MIN_MODEM`.In this mode, station wakes
 Set the WiFi API configuration storage type `WIFI_STORAGE_RAM`. all configuration will only store in the memory
 Set the WiFi operating mode `WIFI_MODE_STA`. Wifi will work in station mode.
 
-Wifi is used by console command line.
+Wifi is used by console command line.You can view the currently supported wifi commands via the input `help` command.
 `register_wifi` registered the following commands: `sta`,`scan`,`ap`,`query`,`iperf`,`restart`,`heap`.
 
 ```c
@@ -240,13 +240,7 @@ The main program constantly reads data from the command line.`esp_console_run` w
         /* Try to run the command */
         int ret;
         esp_err_t err = esp_console_run(line, &ret);
-        if (err == ESP_ERR_NOT_FOUND) {
-            printf("Unrecognized command\n");
-        } else if (err == ESP_OK && ret != ESP_OK) {
-            printf("Command returned non-zero error code: 0x%x\n", ret);
-        } else if (err != ESP_OK) {
-            printf("Internal error: %s\n", esp_err_to_name(err));
-        }
+        ...
         /* linenoise allocates line buffer on the heap, so need to free it */
         linenoiseFree(line);
     }
