@@ -48,8 +48,6 @@ accept: 192.168.43.100,60346
   54-  57 sec       0.45 Mbits/sec
   57-  60 sec       0.16 Mbits/sec
   60-  63 sec       0.33 Mbits/sec
-  63-  66 sec       0.00 Mbits/sec
-  66-  69 sec       0.00 Mbits/sec
 ```
 
 # 3. Project Structure
