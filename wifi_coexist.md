@@ -13,7 +13,7 @@ Enter the following command by connecting to the borad terminal：
 1. run `sta ssid password` in board terminal.
 If you connect to the wifi named `tset_wifi` and the wifi password `12345678`.You should enter the command `sta tset_wifi 12345678`
 
-2. run `iperf -s -i 3` in board terminal.
+2. run `iperf -s -i 3 -t 1000` in board terminal.
 This command starts a tcp server to test the transfer rate of wifi.
 
 3. run `iperf -c 192.168.10.42 -i 3 -t 60` in PC terminal.
@@ -238,13 +238,6 @@ esp_ble_mesh_register_prov_callback(example_ble_mesh_provisioning_cb);
 
 ## wifi_console_init
 `wifi_console_init` starts by initializing basic functions of wifi.
-Set current WiFi power save type `WIFI_PS_MIN_MODEM`.In this mode, station wakes up to receive beacon every DTIM period
-Set the WiFi API configuration storage type `WIFI_STORAGE_RAM`. all configuration will only store in the memory
-Set the WiFi operating mode `WIFI_MODE_STA`. Wifi will work in station mode.
-
-Wifi is used by console command line.You can view the currently supported wifi commands via the input `help` command.
-`register_wifi` registered the following commands: `sta`,`scan`,`ap`,`query`,`iperf`,`restart`,`heap`.
-
 ```c
     initialise_wifi();
     initialize_console();
@@ -253,6 +246,29 @@ Wifi is used by console command line.You can view the currently supported wifi c
     esp_console_register_help_command();
     register_wifi();
 ```
+`initialise_wifi` is used to set the working mode of wifi.
+1. Set current WiFi power save type `WIFI_PS_MIN_MODEM`.In this mode, station wakes up to receive beacon every DTIM period
+2. Set the WiFi API configuration storage type `WIFI_STORAGE_RAM`. all configuration will only store in the memory
+3. Set the WiFi operating mode `WIFI_MODE_STA`. Wifi will work in station mode.
+
+Wifi is used by console command line.You can view the currently supported wifi commands via the input `help` command.
+`register_wifi` registered the following commands: `sta`,`scan`,`ap`,`query`,`iperf`,`restart`,`heap`.
+For example: register `start` console command.The handler for this command is `restart`.The `restart` will run while you input command `restart`.
+```c
+    static int restart(int argc, char **argv)
+    {
+        ESP_LOGI(TAG, "Restarting");
+        esp_restart();
+    }
+    const esp_console_cmd_t restart_cmd = {
+        .command = "restart",
+        .help = "Restart the program",
+        .hint = NULL,
+        .func = &restart,
+    };
+```
+
+
 The main program constantly reads data from the command line.`esp_console_run` will parse the argument and call the callback function of the previously initialized command.
 ```c
     /* Main loop */
