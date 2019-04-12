@@ -20,6 +20,38 @@ This command starts a tcp server to test the transfer rate of wifi.
 
 4. You can use Bluetooth at the same time.Control node light switch.
 
+The log:
+```c
+esp32> iperf -s -i 3 -t 1000
+I (31091) iperf: mode=tcp-server sip=192.168.43.239:5001, dip=0.0.0.0:5001, interval=3, time=1000
+
+        Interval Bandwidth
+esp32>    0-   3 sec       0.00 Mbits/sec
+   3-   6 sec       0.00 Mbits/sec
+   6-   9 sec       0.00 Mbits/sec
+accept: 192.168.43.100,60346
+   9-  12 sec       0.04 Mbits/sec
+  12-  15 sec       0.22 Mbits/sec
+  15-  18 sec       0.20 Mbits/sec
+  18-  21 sec       0.01 Mbits/sec
+  21-  24 sec       0.14 Mbits/sec
+  24-  27 sec       0.06 Mbits/sec
+  27-  30 sec       0.07 Mbits/sec
+  30-  33 sec       0.20 Mbits/sec
+  33-  36 sec       0.17 Mbits/sec
+  36-  39 sec       0.36 Mbits/sec
+  39-  42 sec       0.18 Mbits/sec
+  42-  45 sec       0.18 Mbits/sec
+  45-  48 sec       0.38 Mbits/sec
+  48-  51 sec       0.18 Mbits/sec
+  51-  54 sec       0.46 Mbits/sec
+  54-  57 sec       0.45 Mbits/sec
+  57-  60 sec       0.16 Mbits/sec
+  60-  63 sec       0.33 Mbits/sec
+  63-  66 sec       0.00 Mbits/sec
+  66-  69 sec       0.00 Mbits/sec
+```
+
 # 3. Project Structure
 The folder `ble_mesh_wifi_coexist` contains the following files and subfolders:
 
