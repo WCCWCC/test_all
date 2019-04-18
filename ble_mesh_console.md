@@ -116,40 +116,7 @@ void app_main(void)
         prompt = "esp32> ";
 #endif //CONFIG_LOG_COLORS
     }
-
-    /* Main loop */
-    while (true) {
-        /* Get a line using linenoise.
-         * The line is returned when ENTER is pressed.
-         */
-        char *line = linenoise(prompt);
-        if (line == NULL) { /* Ignore empty lines */
-            continue;
-        }
-        /* Add the command to the history */
-        linenoiseHistoryAdd(line);
-#if CONFIG_STORE_HISTORY
-        /* Save command history to filesystem */
-        linenoiseHistorySave(HISTORY_PATH);
-#endif
-
-        /* Try to run the command */
-        int ret;
-        esp_err_t err = esp_console_run(line, &ret);
-        if (err == ESP_ERR_NOT_FOUND) {
-            printf("Unrecognized command\n");
-        } else if (err == ESP_ERR_INVALID_ARG) {
-            // command was empty
-        } else if (err == ESP_OK && ret != ESP_OK) {
-            printf("\nCommand returned non-zero error code: 0x%x\n", ret);
-        } else if (err != ESP_OK) {
-            printf("Internal error: 0x%x\n", err);
-        }
-        /* linenoise allocates line buffer on the heap, so need to free it */
-        linenoiseFree(line);
-    }
-}
-
+    
 ```
 
 ##  Main Program
