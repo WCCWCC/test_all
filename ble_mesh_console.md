@@ -20,17 +20,18 @@ The folder `ble_mesh_provisioner` contains the following files and subfolders:
 
 | File Name        |Description               |
 | ----------------------|------------------------- |
-| `ble_mesh_adapter`      | The message opcode  |
-| `ble_mesh_cfg_srv_model`       | The pointer to the client model struct  |
-| `ble_mesh_console_lib` | The NetKey Index of the subnet through which the message is sent |
-| `ble_mesh_console_main` | The AppKey Index for message encryption |
-| `ble_mesh_console_system`    | The address of the destination nodes |
-| `ble_mesh_reg_cfg_client_cmd`| The TTL State, which determines how many times a message will be relayed |
-| `ble_mesh_reg_gen_onoff_client_cmd`| This parameter determines if the model will wait for an acknowledgement after sending a message   |
-| `ble_mesh_reg_test_perf_client_cmd` | The maximum time the model will wait for an acknowledgement   |
-| `ble_mesh_register_node_cmd`    | The role of message (node/provisioner)  |
-| `ble_mesh_register_provisioner_cmd`    | The role of message (node/provisioner)  |
-| `register_bluetooth`    | The role of message (node/provisioner)  |
+| `ble_mesh_adapter`      | Adapt the original initialization method to the way it is applied to the console. |
+| `ble_mesh_cfg_srv_model` | Implemented the definition and initialization of the model related structure. |
+| `ble_mesh_console_lib` | Implemented common format conversion functions. |
+| `ble_mesh_console_main` | The main function, the initialization of the console and the registration of the command |
+| `ble_mesh_console_system`  | Implemented system-related commands `restart`, `free`, `make`. |
+| `ble_mesh_reg_cfg_client_cmd`| Implemented the configure client model related command `bmccm`. |
+| `ble_mesh_reg_gen_onoff_client_cmd`| Implemented the onoff client model related command `bmgocm`.|
+
+| `ble_mesh_reg_test_perf_client_cmd` | Implemented the performance test related commands `bmcperf`. |
+| `ble_mesh_register_node_cmd`  | Implemented the node related commands `bmreg`, `bmoob`, `bminit`, `bmpbearer`, `bmtxpower`.  |
+| `ble_mesh_register_provisioner_cmd` | Implemented the node provisioner commands `bmpreg`, `bmpdev`, `bmpbearer`, `bmpgetn`, `bmpaddn`,`bmpbind`,`bmpkey`. |
+| `register_bluetooth`    | Implemented a command to get a Bluetooth address `btmac` |
 
 
 
