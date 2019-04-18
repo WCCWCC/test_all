@@ -15,9 +15,9 @@ The implementationer related commands are shown in the table below：
 
 | File Name        |Description               |
 | ----------------------|------------------------- |
-| `bmreg`      | ble mesh: provisioner/node register callback |
+| `bmreg`  | ble mesh: provisioner/node register callback |
 | `bmpreg` | ble mesh provisioner: register callback |
-| `bmoob` | ble mesh: provisioner/node config OOB parameters|
+| `bmoob`  | ble mesh: provisioner/node config OOB parameters|
 | `bminit` | ble mesh: provisioner/node init |
 | `bmpbearer `  | ble mesh provisioner: enable/disable different bearers |
 | `bmpdev `| ble mesh provisioner: add/delete unprovisioned device |
@@ -33,10 +33,10 @@ For example:
 
 ## 2.2 Implement a node
 
-| File Name        |Description               |
-| ----------------------|------------------------- |
-| `bmreg`      | Adapt the original initialization method to the way it is applied to the console. |
-| `bmoob` | ble mesh: provisioner/node config OOB parameters |
+| File Name    |Description               |
+| -------------|------------------------- |
+| `bmreg`  | Adapt the original initialization method to the way it is applied to the console. |
+| `bmoob`  | ble mesh: provisioner/node config OOB parameters |
 | `bminit` | ble mesh: provisioner/node init |
 | `bmnbearer` | ble mesh node: enable/disable different bearers |
 
@@ -67,17 +67,12 @@ The folder `ble_mesh_provisioner` contains the following files and subfolders:
 
 # Example Walkthrough
 ## Main Entry Point
-The program’s entry point is the app_main() function:
-
-Initialize bluetooth related functions, then initialize the wifi console.
 
 ```c
 void app_main(void)
 {
     esp_err_t res;
-
     nvs_flash_init();
-
     // init and enable bluetooth
     res = bluetooth_init();
     if (res) {
@@ -88,9 +83,7 @@ void app_main(void)
 #if CONFIG_STORE_HISTORY
     initialize_filesystem();
 #endif
-
     initialize_console();
-	bmreg
 
     /* Register commands */
     esp_console_register_help_command();
@@ -108,19 +101,7 @@ void app_main(void)
     ble_mesh_register_configuration_client_model();
 #endif
 
-	esp_ble_mesh_node_prov_enable
-
-
-    /* Prompt to be printed before each line.
-     * This can be customized, made dynamic, etc.
-     */
     const char *prompt = LOG_COLOR_I "esp32> " LOG_RESET_COLOR;
-
-    printf("\n"
-           "This is an example of an ESP-IDF console component.\n"
-           "Type 'help' to get the list of commands.\n"
-           "Use UP/DOWN arrows to navigate through the command history.\n"
-           "Press TAB when typing a command name to auto-complete.\n");
 
     /* Figure out if the terminal supports escape sequences */
     int probe_status = linenoiseProbe();
