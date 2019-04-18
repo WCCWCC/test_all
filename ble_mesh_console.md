@@ -28,7 +28,7 @@ For example:
 3. bmoob -p 0x5
 4. bminit -m 0x01
 5. bmpbearer -b 0x3 -e 1
-6. bmpdev -z add -d MAC -b 0x3 -a 0 -f 1      
+6. bmpdev -z add -d `MAC` -b 0x3 -a 0 -f 1      
 **Note: `MAC` Is the address of the Bluetooth device，You can use `btmac` to query the device address on devices that need to access the network. **
 
 ## 2.2 Implement a node
@@ -58,7 +58,6 @@ The folder `ble_mesh_provisioner` contains the following files and subfolders:
 | `ble_mesh_console_system`  | Implemented system-related commands `restart`, `free`, `make`. |
 | `ble_mesh_reg_cfg_client_cmd`| Implemented the configure client model related command `bmccm`. |
 | `ble_mesh_reg_gen_onoff_client_cmd`| Implemented the onoff client model related command `bmgocm`.|
-
 | `ble_mesh_reg_test_perf_client_cmd` | Implemented the performance test related commands `bmcperf`. |
 | `ble_mesh_register_node_cmd`  | Implemented the node related commands `bmreg`, `bmoob`, `bminit`, `bmpbearer`, `bmtxpower`.  |
 | `ble_mesh_register_provisioner_cmd` | Implemented the node provisioner commands `bmpreg`, `bmpdev`, `bmpbearer`, `bmpgetn`, `bmpaddn`,`bmpbind`,`bmpkey`. |
@@ -67,7 +66,7 @@ The folder `ble_mesh_provisioner` contains the following files and subfolders:
 
 # Example Walkthrough
 ## Main Entry Point
-
+Initialize Bluetooth, then initialize the console, and finally register a series of commands.
 ```c
 void app_main(void)
 {
@@ -79,7 +78,6 @@ void app_main(void)
         printf("esp32_bluetooth_init failed (ret %d)", res);
     }
 	
-
 #if CONFIG_STORE_HISTORY
     initialize_filesystem();
 #endif
@@ -154,38 +152,7 @@ void app_main(void)
 
 ```
 
-## wifi_console_init
-`wifi_console_init` starts by initializing basic functions of wifi.
-```c
-    initialise_wifi();
-    initialize_console();
-
-    /* Register commands */
-    esp_console_register_help_command();
-    register_wifi();
-```
-`initialise_wifi` is used to set the working mode of wifi.
-1. Set current WiFi power save type `WIFI_PS_MIN_MODEM`.In this mode, station wakes up to receive beacon every DTIM period
-2. Set the WiFi API configuration storage type `WIFI_STORAGE_RAM`. all configuration will only store in the memory
-3. Set the WiFi operating mode `WIFI_MODE_STA`. Wifi will work in station mode.
-
-Wifi is used by console command line.You can view the currently supported wifi commands via the input `help` command.
-`register_wifi` registered the following commands: `sta`,`scan`,`ap`,`query`,`iperf`,`restart`,`heap`.
-For example: register `start` console command.The handler for this command is `restart`.The `restart` will run while you input command `restart`.
-```c
-    static int restart(int argc, char **argv)
-    {
-        ESP_LOGI(TAG, "Restarting");
-        esp_restart();
-    }
-    const esp_console_cmd_t restart_cmd = {
-        .command = "restart",
-        .help = "Restart the program",
-        .hint = NULL,
-        .func = &restart,
-    };
-```
-
+##  Main Program
 
 The main program constantly reads data from the command line.`esp_console_run` will parse the argument and call the callback function of the previously initialized command.
 ```c
