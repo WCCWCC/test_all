@@ -1,26 +1,28 @@
-# 1. Introduction
-## 1.1 Demo Function
+# Introduction
 
-1. This is a demo that wifi and bluetooth coexist.You can use the wifi function while operating Bluetooth.
-2. wifi function in this demo: Testing the transfer rate of wifi by `iperf`.
-3. bluetooth function in this demo:The function of Bluetooth is the function of `ble_mesh_fast_prov_server`.
+This demo demonstrates the Wi-Fi and Bluetooth (BLE/BR/EDR) coexistence feature of ESP32. Simply put, users can use the Wi-Fi function while operating Bluetooth. In this demo, 
 
-Noet:In this demo,you call wifi API and bluetooth API.such as `wifi_get_local_ip` and `esp_ble_mesh_provisioner_add_unprov_dev`.
+* The Wi-Fi function is demonstrated by measuring its transfer rate, using the `iperf` protocol;
+* The Bluetooth function is demonstrated by the fast provisioning function. Details can be seen in `ble_mesh_fast_prov_server`（增加链接）.
 
-# 2. How to use this demo
-You need to download the project(`ble_mesh_wifi_coexist`) code to board.
-Enter the following command by connecting to the borad terminal：
-1. run `sta ssid password` in board terminal.
-If you connect to the wifi named `tset_wifi` and the wifi password `12345678`.You should enter the command `sta tset_wifi 12345678`
+(( > Note: 
 
-2. run `iperf -s -i 3 -t 1000` in board terminal.
-This command starts a tcp server to test the transfer rate of wifi.
+In this demo, you call wifi API and bluetooth API.such as `wifi_get_local_ip` and `esp_ble_mesh_provisioner_add_unprov_dev`.))
 
-3. run `iperf -c 192.168.10.42 -i 3 -t 60` in PC terminal.
+# What You Need
 
-4. You can use Bluetooth at the same time.Control node light switch.
+Download and flash the `ble_mesh_wifi_coexist` project to your ESP32 development board and then use the following commands to get started with this demo.
 
-The log:
+1. Connect your development board to the Wi-Fi network by entering the `sta ssid password` command in your serial port tool.
+	- For example, you should enter `sta tset_wifi 12345678` if you want to connect your board to a network with a SSID of `tset_wifi` and a password of `12345678`.
+
+2. Start a TCP server by entering the `iperf -s -i 3 -t 1000` command in your serial port tool, which prints the current transfer rate of the Wi-Fi network the board connects to. 
+
+3. Start a TCP client by entering the `iperf -c board_IP_address -i 3 -t 60` command in your PC terminal. 
+	- For example, you should enter `iperf -c 192.168.10.42 -i 3 -t 60`, if the IP address of your board is 192.168.10.42.
+
+Then, a log will be printed:
+
 ```c
 esp32> iperf -s -i 3 -t 1000
 I (31091) iperf: mode=tcp-server sip=192.168.43.239:5001, dip=0.0.0.0:5001, interval=3, time=1000
@@ -50,8 +52,17 @@ accept: 192.168.43.100,60346
   60-  63 sec       0.33 Mbits/sec
 ```
 
-# 3. Project Structure
-The folder `ble_mesh_wifi_coexist` contains the following files and subfolders:
+Meanwhile, you can use the Bluetooth function during the whole process, for example, controlling the LED indicator on your board.
+
+> Note:
+> 
+> 1. Please use the correct serial port number for connecting your board when entering commands in your serial port tool; 
+> 2. Your PC and board should connect to the same Wi-Fi network;
+
+
+# Project Directory
+
+The `ble_mesh_wifi_coexist` demo contains the following files and subfolders:
 
 ```
 $ tree examples/bluetooth/ble_mesh/ble_mesh/ble_mesh_wifi_coexist
@@ -65,19 +76,24 @@ $ tree examples/bluetooth/ble_mesh/ble_mesh/ble_mesh_wifi_coexist
 ├── sdkconfig.old      /* Previously saved parameters of `make menuconfig` */
 └── tutorial         /* More in-depth information about the demo */
 ```
-This folder `main` mainly implement the code of the Bluetooth application layer.The Bluetooth function is the same as `ble_mesh_fast_prov_server`.
 
-This folder `components` Mainly implement the code of the wifi application layer.
-The wifi part implements some basic commands and test commands corresponding to `iperf`.As the following command:
+The `main` folder mainly implements the BLE Mesh feature.  Details can be seen in `ble_mesh_fast_prov_server`（增加链接）.
 
+The `components` folder mainly implements the Wi-Fi feature, which allows some basic commands and `iperf-relared` test commands.
 
-Note:`iperf` is a network performance testing tool. Iperf can test maximum TCP and UDP bandwidth performance with multiple parameters and UDP features that can be adjusted as needed to report bandwidth, delay jitter, and packet loss.
+> Note: 
+> 
+> [Iperf](https://iperf.fr) is a tool for active measurements of the maximum achievable bandwidth on IP networks. It supports tuning of various parameters related to timing, buffers and protocols (TCP, UDP, SCTP with IPv4 and IPv6).
 
 # Example Walkthrough
-## Main Entry Point
-The program’s entry point is the app_main() function:
 
-Initialize bluetooth related functions, then initialize the wifi console.
+## Main Entry Point
+
+The program’s entry point is the `app_main()` function.
+
+## Initialization
+
+The code block below first initialize the board, then its bluetooth-related functions (including the Bluetooth and BLE Mesh) and the Wi-Fi console.
 
 ```c
 void app_main(void)
@@ -108,9 +124,13 @@ void app_main(void)
     wifi_console_init();
 }
 ```
-## board_init
-`board_init` starts by initializing the gpio pin of the led light.
-Initialize the `led_state[i].previous` value to `LED_OFF`.
+
+### Initializing the Board
+
+This demo calls the `board_init` function to:
+
+1. First initialize three pins for the LED indicator, and set its initial status to OFF (i.e. initialize the `led_state[i].previous` variable to `LED_OFF`).
+
 ```c
 for (int i = 0; i < 3; i++) {
     gpio_pad_select_gpio(led_state[i].pin);
@@ -119,14 +139,15 @@ for (int i = 0; i < 3; i++) {
     led_state[i].previous = LED_OFF;
 }
 ```
-`bluetooth_init` also created a task named `led_action_thread` to control the status of the light.
-`bluetooth_init` also created a queue named `led_action_queue` is used to store data.The format of the data is `struct _led_state`.
+
+2. Create a task named `led_action_thread` for controlling the status of the light, and then a queue named `led_action_queue` for storing status data, whose format is defined in `struct _led_state`.
+
 ```c
 led_action_queue = xQueueCreate(60, sizeof(struct _led_state));
 ret = xTaskCreate(led_action_thread, "led_action_thread", 4096, NULL, 5, NULL);
 ```
-The task continuously gets data from the queue(`led_action_queue`).Set the state of the light by the value obtained from the queue
-Set the state of the light by calling the following function `gpio_set_level`.
+
+3. The `led_action_thread` task continuously sets the status of the LED indicator by calling the `gpio_set_level` function, using status data obtains data from the `led_action_queue` queue.
 
 ```c
 static void led_action_thread(void *arg)
@@ -146,47 +167,53 @@ static void led_action_thread(void *arg)
 }
 ```
 
-## bluetooth_init
-`bluetooth_init` starts by initializing the non-volatile storage library. This library allows to save key-value pairs in flash memory and is used by some components such as the Wi-Fi library to save the SSID and password.You can use the option to configure menuconfig to save the node's key and configuration information. `Bluetooth Mesh support`  ---> `Store Bluetooth Mesh key and configuration persistently`:
+### Initializing the Bluetooth
 
-```c
-esp_err_t ret = nvs_flash_init();
-if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-    ESP_ERROR_CHECK(nvs_flash_erase());
-    ret = nvs_flash_init();
-}
-ESP_ERROR_CHECK( ret );
-```
+This demo calls the `bluetooth_init` function to:
 
-`bluetooth_init` also initializes the BT controller by first creating a BT controller configuration structure named `esp_bt_controller_config_t` with default settings generated by the `BT_CONTROLLER_INIT_CONFIG_DEFAULT()` macro. The BT controller implements the Host Controller Interface (HCI) on the controller side, the Link Layer (LL) and the Physical Layer (PHY). The BT Controller is invisible to the user applications and deals with the lower layers of the BLE stack. The controller configuration includes setting the BT controller stack size, priority and HCI baud rate. With the settings created, the BT controller is initialized and enabled with the `esp_bt_controller_init()` function:
+1. First initialize the non-volatile storage library, which allows saving key-value pairs in flash memory and is used by some components. You can save the node's keys and configuration information at `menuconfig` --> `Bluetooth Mesh support` --> `Store Bluetooth Mesh key and configuration persistently`:
 
-```c
-esp_bt_controller_config_t bt_cfg = BT_CONTROLLER_INIT_CONFIG_DEFAULT();
-ret = esp_bt_controller_init(&bt_cfg);
-```
+	 ```c
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        ret = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK( ret );
+	 ```
 
-Next, the controller is enabled in BLE Mode. 
+2. Initializes the BT controller by first creating a BT controller configuration structure named `esp_bt_controller_config_t` with default settings generated by the `BT_CONTROLLER_INIT_CONFIG_DEFAULT()` macro. The BT controller implements the Host Controller Interface (HCI) on the controller side, the Link Layer (LL) and the Physical Layer (PHY). The BT Controller is invisible to the user applications and deals with the lower layers of the BLE stack. The controller configuration includes setting the BT controller stack size, priority and HCI baud rate. With the settings created, the BT controller is initialized and enabled with the `esp_bt_controller_init()` function:
 
-```c
-ret = esp_bt_controller_enable(ESP_BT_MODE_BLE);
-```
->The controller should be enabled in `ESP_BT_MODE_BTDM`, if you want to use the dual mode (BLE + BT).
+	```c
+	esp_bt_controller_config_t bt_cfg = BT_CONTROLLER_INIT_CONFIG_DEFAULT();
+	ret = esp_bt_controller_init(&bt_cfg);
+	```
+
+	Next, the controller is enabled in BLE Mode. 
+
+	```c
+	ret = esp_bt_controller_enable(ESP_BT_MODE_BLE);
+	```
+	The controller should be enabled in `ESP_BT_MODE_BTDM`, if you want to use the dual mode (BLE + BT). There are four Bluetooth modes supported:
+	
+	* `ESP_BT_MODE_IDLE`: Bluetooth not running
+	* `ESP_BT_MODE_BLE`: BLE mode
+	* `ESP_BT_MODE_CLASSIC_BT`: BT Classic mode
+	* `ESP_BT_MODE_BTDM`: Dual mode (BLE + BT Classic)
+
+	After the initialization of the BT controller, the Bluedroid stack, which includes the common definitions and APIs for both BT Classic and BLE, is initialized and enabled by using:
+
+	```c
+	ret = esp_bluedroid_init();
+	ret = esp_bluedroid_enable();
+	```
+
+### Initializing the BLE Mesh
+
+This demo calls the `ble_mesh_init` function to:
  
-There are four Bluetooth modes supported:
+1. Initialize the board's uuid by setting the `dev_uuid` variable, which is used to distinguish devices when provisioning. 
 
-1. `ESP_BT_MODE_IDLE`: Bluetooth not running
-2. `ESP_BT_MODE_BLE`: BLE mode
-3. `ESP_BT_MODE_CLASSIC_BT`: BT Classic mode
-4. `ESP_BT_MODE_BTDM`: Dual mode (BLE + BT Classic)
-
-After the initialization of the BT controller, the Bluedroid stack, which includes the common definitions and APIs for both BT Classic and BLE, is initialized and enabled by using:
-
-```c
-ret = esp_bluedroid_init();
-ret = esp_bluedroid_enable();
-```
-
-## ble_mesh_init
 ```c
 static esp_err_t ble_mesh_init(void)
 {
@@ -209,35 +236,38 @@ static esp_err_t ble_mesh_init(void)
     return ESP_OK;
 }
 ```
-`ble_mesh_init` starts by initializing the device's uuid (`dev_uuid`).Uuid is used to distinguish devices when provisioning.
+2. Rregister the provisioning callback function in the BLE Mesh stack with `esp_ble_mesh_register_prov_callback(esp_ble_mesh_prov_cb)`, among which `esp_ble_mesh_prov_cb` is used to handle events thrown by protocol stations. This requires the user to implement it himself, and also needs to know the meaning of the event and how to trigger it. For example: The `ESP_BLE_MESH_PROVISIONER_PROV_LINK_OPEN_EVT` event is triggered when the provisioner starts provisioning unprovisioned device, and is handled in the `example_ble_mesh_provisioning_cb` function. Note that you need to register this function with the BLE Mesh protocol stack by calling the `esp_ble_mesh_register_prov_callback` API.
 
-- `esp_ble_mesh_register_prov_callback(esp_ble_mesh_prov_cb)`: registers the provisioning callback function in the BLE Mesh stack.`esp_ble_mesh_prov_cb` is used to handle events thrown by protocol stations.This requires the user to implement it himself, and also needs to know the meaning of the event and how to trigger it.
-For example: The event `ESP_BLE_MESH_PROVISIONER_PROV_LINK_OPEN_EVT`will trigger when provisioner start provisioning unprovisioned device. If you want to handle this event,You need to implement the handler for this event `example_ble_mesh_provisioning_cb`.You also need to register this event handler with the protocol station by calling the API `esp_ble_mesh_register_prov_callback`.
-```c
-ESP_BLE_MESH_PROVISIONER_PROV_LINK_OPEN_EVT,                /*!< Provisioner establish a BLE Mesh link event */
-
-static void example_ble_mesh_provisioning_cb(esp_ble_mesh_prov_cb_event_t event,
+	```c
+	ESP_BLE_MESH_PROVISIONER_PROV_LINK_OPEN_EVT,                /*!< Provisioner establish a BLE Mesh link event */
+	
+	static void example_ble_mesh_provisioning_cb(esp_ble_mesh_prov_cb_event_t event,
         esp_ble_mesh_prov_cb_param_t *param)
-{
-    esp_err_t err;
+	{
+   	     esp_err_t err;
     
-    switch (event) {
-    case  :
-        ESP_LOGI(TAG, "ESP_BLE_MESH_PROVISIONER_PROV_LINK_OPEN_EVT");
-        provisioner_prov_link_open(param->provisioner_prov_link_open.bearer);
-        break;
-    }
-}
-esp_ble_mesh_register_prov_callback(example_ble_mesh_provisioning_cb);
-```
-- `esp_ble_mesh_register_custom_model_callback(esp_ble_mesh_model_cb)`: Register BLE Mesh callback for user-defined models' operations. 
-- `esp_ble_mesh_register_config_client_callback(example_ble_mesh_config_client_cb)`:Register BLE Mesh Config Client Model callback.
-- `esp_ble_mesh_register_config_server_callback(example_ble_mesh_config_server_cb)`:Register BLE Mesh Config Server Model callback.
+         switch (event) {
+    	  case ESP_BLE_MESH_PROVISIONER_PROV_LINK_OPEN_EVT:
+        	ESP_LOGI(TAG, "ESP_BLE_MESH_PROVISIONER_PROV_LINK_OPEN_EVT");
+       	 provisioner_prov_link_open(param->provisioner_prov_link_open.bearer);
+        	break;
+   	 }
+	}
 
-- `esp_ble_mesh_init(&prov, &comp)` ：Initialize BLE Mesh module.This API initializes provisioning capabilities and composition data information.Registered information is stored in the structure `prov`.The structure `prov` is essentially a composition of one or more models.
+	esp_ble_mesh_register_prov_callback(example_ble_mesh_provisioning_cb);
+	```
+3. Register BLE Mesh callback for user-defined models' operations with `esp_ble_mesh_register_custom_model_callback(esp_ble_mesh_model_cb)`.
 
-## wifi_console_init
-`wifi_console_init` starts by initializing basic functions of wifi.
+4. Register BLE Mesh Config Client Model callback with `esp_ble_mesh_register_config_client_callback(example_ble_mesh_config_client_cb)`.
+5. Register BLE Mesh Config Server Model callback with `esp_ble_mesh_register_config_server_callback(example_ble_mesh_config_server_cb)`.
+
+6. Initialize the BLE Mesh module by calling the `esp_ble_mesh_init(&prov, &comp)` API, which initializes the provisioning capabilities and composition data information. Registered information is stored in the `prov` struct, which is essentially a composition of one or more models.
+
+
+### Initializing the Wi-Fi Console
+
+This demo calls the `wifi_console_init` function: 
+
 ```c
     initialise_wifi();
     initialize_console();
@@ -246,14 +276,19 @@ esp_ble_mesh_register_prov_callback(example_ble_mesh_provisioning_cb);
     esp_console_register_help_command();
     register_wifi();
 ```
-`initialise_wifi` is used to set the working mode of wifi.
-1. Set current WiFi power save type `WIFI_PS_MIN_MODEM`.In this mode, station wakes up to receive beacon every DTIM period
-2. Set the WiFi API configuration storage type `WIFI_STORAGE_RAM`. all configuration will only store in the memory
-3. Set the WiFi operating mode `WIFI_MODE_STA`. Wifi will work in station mode.
 
-Wifi is used by console command line.You can view the currently supported wifi commands via the input `help` command.
-`register_wifi` registered the following commands: `sta`,`scan`,`ap`,`query`,`iperf`,`restart`,`heap`.
-For example: register `start` console command.The handler for this command is `restart`.The `restart` will run while you input command `restart`.
+1. Initialize the basic Wi-Fi function by calling `initialise_wifi`, which sets 
+
+	* the Current Wi-Fi power save type to `WIFI_PS_MIN_MODEM`, which indicates the station wakes up to receive beacon every DTIM period
+	* the Wi-Fi API configuration storage type to `WIFI_STORAGE_RAM`, which indicates all configuration will only be stored in the embedded memory
+	* the Wi-Fi operating mode to `WIFI_MODE_STA`, which allows the board to work in Station mode.
+
+
+2. Initialize the Wi-Fi console by calling the `initialize_console` function.
+3. Enable the `Help` function by calling the `esp_console_register_help_command()`. After that, you can view all the currently supported Wi-Fi commands by entering the `help` command in your serial port tool.
+4. Register the commands by calling the `register_wifi` function. 
+	* An example of registering a `restart` command with a `restart()` function to handle this command can be seen below. After the initialization, you can enter the `restart` command in your serial port tool to call the `restart()` function.
+	
 ```c
     static int restart(int argc, char **argv)
     {
@@ -268,8 +303,10 @@ For example: register `start` console command.The handler for this command is `r
     };
 ```
 
+Note that the `sta`,`scan`,`ap`,`query`,`iperf`,`restart` and `heap` commands are supported in this demo.
 
-The main program constantly reads data from the command line.`esp_console_run` will parse the argument and call the callback function of the previously initialized command.
+The main program of the Wi-Fi constantly reads data from the command line. The `esp_console_run` function will parse the command entered from your serial port tool, then call the handler function registered for this command.
+
 ```c
     /* Main loop */
     while (true) {
@@ -293,5 +330,4 @@ The main program constantly reads data from the command line.`esp_console_run` w
     return;
 }
 ```
-
 
