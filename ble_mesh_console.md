@@ -11,9 +11,38 @@ Noet:In this demo,You can use the `help` command to see all the commands current
 You need to download the project(`ble_mesh_console/ble_mesh_provisioner`) code to board.
 
 ## 2.1 Implement a provisioner
+The implementationer related commands are shown in the table below：
+
+| File Name        |Description               |
+| ----------------------|------------------------- |
+| `bmreg`      | ble mesh: provisioner/node register callback |
+| `bmpreg` | ble mesh provisioner: register callback |
+| `bmoob` | ble mesh: provisioner/node config OOB parameters|
+| `bminit` | ble mesh: provisioner/node init |
+| `bmpbearer `  | ble mesh provisioner: enable/disable different bearers |
+| `bmpdev `| ble mesh provisioner: add/delete unprovisioned device |
+
+For example:
+bmreg
+bmpreg
+bmoob -p 0x%x
+bminit -m 0x01
+bmpbearer -b %d -e 1
+bmpdev -z add -d %s -b %d -a 0 -f 1
 
 ## 2.2 Implement a node
 
+| File Name        |Description               |
+| ----------------------|------------------------- |
+| `bmreg`      | Adapt the original initialization method to the way it is applied to the console. |
+| `bmoob` | ble mesh: provisioner/node config OOB parameters |
+| `bminit` | ble mesh: provisioner/node init |
+| `bmnbearer` | ble mesh node: enable/disable different bearers |
+For example:
+bmreg
+bmoob -o 0 -x 0
+bminit -m 0x1000
+bmnbearer -b %d -e 1
 
 # 3. Project Structure
 The folder `ble_mesh_provisioner` contains the following files and subfolders:
