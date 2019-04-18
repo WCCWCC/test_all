@@ -1,77 +1,39 @@
 # 1. Introduction
 ## 1.1 Demo Function
 
-1. This is a demo that wifi and bluetooth coexist.You can use the wifi function while operating Bluetooth.
-2. wifi function in this demo: Testing the transfer rate of wifi by `iperf`.
-3. bluetooth function in this demo:The function of Bluetooth is the function of `ble_mesh_fast_prov_server`.
+1. This is a demo that help you quickly implement BLE MESH related functions
+2. You can implement the provisioner to control the device to access the mesh network.
+3. You can implement node to control the state of the light.
 
-Noet:In this demo,you call wifi API and bluetooth API.such as `wifi_get_local_ip` and `esp_ble_mesh_provisioner_add_unprov_dev`.
+Noet:In this demo,You can use the `help` command to see all the commands currently supported.You can also modify the code and add the commands you want.
 
 # 2. How to use this demo
-You need to download the project(`ble_mesh_wifi_coexist`) code to board.
-Enter the following command by connecting to the borad terminal：
-1. run `sta ssid password` in board terminal.
-If you connect to the wifi named `tset_wifi` and the wifi password `12345678`.You should enter the command `sta tset_wifi 12345678`
+You need to download the project(`ble_mesh_console/ble_mesh_provisioner`) code to board.
 
-2. run `iperf -s -i 3 -t 1000` in board terminal.
-This command starts a tcp server to test the transfer rate of wifi.
+## 2.1 Implement a provisioner
 
-3. run `iperf -c 192.168.10.42 -i 3 -t 60` in PC terminal.
+## 2.2 Implement a node
 
-4. You can use Bluetooth at the same time.Control node light switch.
-
-The log:
-```c
-esp32> iperf -s -i 3 -t 1000
-I (31091) iperf: mode=tcp-server sip=192.168.43.239:5001, dip=0.0.0.0:5001, interval=3, time=1000
-
-        Interval Bandwidth
-esp32>    0-   3 sec       0.00 Mbits/sec
-   3-   6 sec       0.00 Mbits/sec
-   6-   9 sec       0.00 Mbits/sec
-accept: 192.168.43.100,60346
-   9-  12 sec       0.04 Mbits/sec
-  12-  15 sec       0.22 Mbits/sec
-  15-  18 sec       0.20 Mbits/sec
-  18-  21 sec       0.01 Mbits/sec
-  21-  24 sec       0.14 Mbits/sec
-  24-  27 sec       0.06 Mbits/sec
-  27-  30 sec       0.07 Mbits/sec
-  30-  33 sec       0.20 Mbits/sec
-  33-  36 sec       0.17 Mbits/sec
-  36-  39 sec       0.36 Mbits/sec
-  39-  42 sec       0.18 Mbits/sec
-  42-  45 sec       0.18 Mbits/sec
-  45-  48 sec       0.38 Mbits/sec
-  48-  51 sec       0.18 Mbits/sec
-  51-  54 sec       0.46 Mbits/sec
-  54-  57 sec       0.45 Mbits/sec
-  57-  60 sec       0.16 Mbits/sec
-  60-  63 sec       0.33 Mbits/sec
-```
 
 # 3. Project Structure
-The folder `ble_mesh_wifi_coexist` contains the following files and subfolders:
+The folder `ble_mesh_provisioner` contains the following files and subfolders:
 
-```
-$ tree examples/bluetooth/ble_mesh/ble_mesh/ble_mesh_wifi_coexist
-├── main        /* Stores the `.c` and `.h` application code files for this demo */
-├── components  /* Stores the `.c` and `.h` iperf code files for this demo */
-├── Makefile    /* Compiling parameters for the demo */
-├── README.md   /* Quick start guide */
-├── build
-├── sdkconfig      /* Current parameters of `make menuconfig` */
-├── sdkconfig.defaults   /* Default parameters of `make menuconfig` */
-├── sdkconfig.old      /* Previously saved parameters of `make menuconfig` */
-└── tutorial         /* More in-depth information about the demo */
-```
-This folder `main` mainly implement the code of the Bluetooth application layer.The Bluetooth function is the same as `ble_mesh_fast_prov_server`.
-
-This folder `components` Mainly implement the code of the wifi application layer.
-The wifi part implements some basic commands and test commands corresponding to `iperf`.As the following command:
+| File Name        |Description               |
+| ----------------------|------------------------- |
+| `ble_mesh_adapter`      | The message opcode  |
+| `ble_mesh_cfg_srv_model`       | The pointer to the client model struct  |
+| `ble_mesh_console_lib` | The NetKey Index of the subnet through which the message is sent |
+| `ble_mesh_console_main` | The AppKey Index for message encryption |
+| `ble_mesh_console_system`    | The address of the destination nodes |
+| `ble_mesh_reg_cfg_client_cmd`| The TTL State, which determines how many times a message will be relayed |
+| `ble_mesh_reg_gen_onoff_client_cmd`| This parameter determines if the model will wait for an acknowledgement after sending a message   |
+| `ble_mesh_reg_test_perf_client_cmd` | The maximum time the model will wait for an acknowledgement   |
+| `ble_mesh_register_node_cmd`    | The role of message (node/provisioner)  |
+| `ble_mesh_register_provisioner_cmd`    | The role of message (node/provisioner)  |
+| `register_bluetooth`    | The role of message (node/provisioner)  |
 
 
-Note:`iperf` is a network performance testing tool. Iperf can test maximum TCP and UDP bandwidth performance with multiple parameters and UDP features that can be adjusted as needed to report bandwidth, delay jitter, and packet loss.
+
 
 # Example Walkthrough
 ## Main Entry Point
@@ -238,15 +200,6 @@ The main program constantly reads data from the command line.`esp_console_run` w
     return;
 }
 ```
-
-
-
-demo 描述一下：
-实现node + proovisioner
-
-实现 message 发送和接收
-
-
 
 
 
