@@ -28,7 +28,8 @@ For example:
 3. bmoob -p 0x5
 4. bminit -m 0x01
 5. bmpbearer -b 0x3 -e 1
-6. bmpdev -z add -d MAC -b 0x3 -a 0 -f 1       
+6. bmpdev -z add -d MAC -b 0x3 -a 0 -f 1      
+**Note: `MAC` Is the address of the Bluetooth device，You can use `btmac` to query the device address on devices that need to access the network. **
 
 ## 2.2 Implement a node
 
