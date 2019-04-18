@@ -23,12 +23,12 @@ The implementationer related commands are shown in the table below：
 | `bmpdev `| ble mesh provisioner: add/delete unprovisioned device |
 
 For example:
-bmreg
-bmpreg
-bmoob -p 0x%x
-bminit -m 0x01
-bmpbearer -b %d -e 1
-bmpdev -z add -d %s -b %d -a 0 -f 1
+1. bmreg    
+2. bmpreg
+3. bmoob -p 0x5
+4. bminit -m 0x01
+5. bmpbearer -b 0x3 -e 1
+6. bmpdev -z add -d MAC -b 0x3 -a 0 -f 1       
 
 ## 2.2 Implement a node
 
@@ -38,11 +38,12 @@ bmpdev -z add -d %s -b %d -a 0 -f 1
 | `bmoob` | ble mesh: provisioner/node config OOB parameters |
 | `bminit` | ble mesh: provisioner/node init |
 | `bmnbearer` | ble mesh node: enable/disable different bearers |
+
 For example:
-bmreg
-bmoob -o 0 -x 0
-bminit -m 0x1000
-bmnbearer -b %d -e 1
+1. bmreg
+2. bmoob -o 0 -x 0
+3. bminit -m 0x1000
+4. bmnbearer -b 0x3 -e 1
 
 # 3. Project Structure
 The folder `ble_mesh_provisioner` contains the following files and subfolders:
@@ -61,8 +62,6 @@ The folder `ble_mesh_provisioner` contains the following files and subfolders:
 | `ble_mesh_register_node_cmd`  | Implemented the node related commands `bmreg`, `bmoob`, `bminit`, `bmpbearer`, `bmtxpower`.  |
 | `ble_mesh_register_provisioner_cmd` | Implemented the node provisioner commands `bmpreg`, `bmpdev`, `bmpbearer`, `bmpgetn`, `bmpaddn`,`bmpbind`,`bmpkey`. |
 | `register_bluetooth`    | Implemented a command to get a Bluetooth address `btmac` |
-
-
 
 
 # Example Walkthrough
