@@ -23,8 +23,10 @@ The implementationer related commands are shown in the table below：
 | `bmpdev `| ble mesh provisioner: add/delete unprovisioned device |
 
 For example:
-1. bmreg    
+1. bmreg        
+This command should be executed before other commands are run.This command registers the callback function `ble_mesh_prov_cb` and `ble_mesh_model_cb`.`ble_mesh_prov_cb`. When the device is provisioning, it triggers a series of events that will be processed in the `ble_mesh_prov_cb` function.The callback function `ble_mesh_model_cb` is triggered when the server model in the node receives or sends a message.
 2. bmpreg
+
 3. bmoob -p 0x5
 4. bminit -m 0x01
 5. bmpbearer -b 0x3 -e 1
