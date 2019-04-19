@@ -66,8 +66,15 @@ This command is used to provisioning the unprovision device. The device address 
 For example:
 1. bmreg
 2. bmoob -o 0 -x 0
+
+This command is used to initialize the OBB of the device.
+
 3. bminit -m 0x1000
+
+`0x1000` represents the model id of the onoff server model
+
 4. bmnbearer -b 0x3 -e 1
+This command is used to enable bearer.
 
 # 3. Project Structure
 The folder `ble_mesh_provisioner` contains the following files and subfolders:
@@ -90,6 +97,7 @@ The folder `ble_mesh_provisioner` contains the following files and subfolders:
 # Example Walkthrough
 ## Main Entry Point
 Initialize Bluetooth, then initialize the console, and finally register a series of commands.
+How to create a new one of your own commands, please refer to here[ble_mesh_wifi_contixt]
 ```c
 void app_main(void)
 {
