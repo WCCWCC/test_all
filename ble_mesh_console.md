@@ -24,13 +24,33 @@ The implementationer related commands are shown in the table below：
 
 For example:
 1. bmreg        
-This command should be executed before other commands are run.This command registers the callback function `ble_mesh_prov_cb` and `ble_mesh_model_cb`.`ble_mesh_prov_cb`. When the device is provisioning, it triggers a series of events that will be processed in the `ble_mesh_prov_cb` function.The callback function `ble_mesh_model_cb` is triggered when the server model in the node receives or sends a message.
+
+This command should be executed before other commands are run.
+This command registers the callback function `ble_mesh_prov_cb` and `ble_mesh_model_cb`.`ble_mesh_prov_cb`. 
+When the device is provisioning, it triggers a series of events that will be processed in the `ble_mesh_prov_cb` function.
+The callback function `ble_mesh_model_cb` is triggered when the server model in the node receives or sends a message.
+
 2. bmpreg
 
+This command is used to initialize the device as a provisioner.
+This command registered the `ble_mesh_prov_adv_cb` callback function.
+
+`ble_mesh_prov_adv_cb` will be triggered when the provisioner receives an unprovision beacon packet broadcast by unprovision device.
+
 3. bmoob -p 0x5
+
+This command initializes the information needed as a provisioner. This parameter `-p` indicates the starting address assigned to the node by the provisioner.
+
 4. bminit -m 0x01
+
+This command is used to initialize the model that the provider needs to have.This parameter `-m` indicates target model that needs to be initialized. `0x01` is the model id of the configure client model.After running this command, the initialization required by BLE MESH is complete.
+
 5. bmpbearer -b 0x3 -e 1
+This command is used to enable bearer.The bearer is divided into PB-ADV and PB-GATT.`0x3` means both bearers are enabled.After the bearer is enabled, The provisioner can send and receive packets normally.
+
 6. bmpdev -z add -d `MAC` -b 0x3 -a 0 -f 1      
+This command is used to provisioning the unprovision device. The device address of the unprovision device is the `MAC` address.
+`-f 1` means that the device will be immediately provisioning.
 
 ** Note: `MAC` Is the address of the Bluetooth device，You can use `btmac` to query the device address on devices that need to access the network. **
 
