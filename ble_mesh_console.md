@@ -1,119 +1,182 @@
-# 1. Introduction
-## 1.1 Demo Function
+# Introduction
 
-1. This is a demo that help you quickly implement BLE MESH related functions
-2. You can implement the provisioner to control the device to access the mesh network.
-3. You can implement node to control the state of the light.
+This demo helps you to quickly implement the ESP BLE Mesh functionality in your applications. For example, you can implement this demo on your device working as a BLE Mesh Provisioner to provisioning unprovisioned devices, so they can join a mesh network, or working as a node to control the state of lights.
 
-Noet:In this demo,You can use the `help` command to see all the commands currently supported.You can also modify the code and add the commands you want.
+Before starting, you could enter the `help` command in your serial port tool to check all the commands that are already supported in this demo.
 
-# 2. How to use this demo
-You need to download the project(`ble_mesh_console/ble_mesh_provisioner`) code to board.
 
-## 2.1 Implement a provisioner
-The implementationer related commands are shown in the table below：
+# Project Structure
+
+The folder `ble_mesh_provisioner` contains the following files and subfolders:
 
 | File Name        |Description               |
+| ----------------------|------------------------- |
+| `ble_mesh_adapter`      | Adapts the codes for initialization by using the console. |
+| `ble_mesh_cfg_srv_model` | Stores all the structs related to the initialization of models. |
+| `ble_mesh_console_lib` | Stores utilities for converting data formats. |
+| `ble_mesh_console_main` | The main function that initializes the console and registers all the commands |
+| `ble_mesh_console_system`  | Implements the system-related commands: `restart`, `free`, `make`. |
+| `ble_mesh_reg_cfg_client_cmd`| Implements the **Configuration Client** model related command: `bmccm`. |
+| `ble_mesh_reg_gen_onoff_client_cmd`| Implements the **Generic OnOff Client** model related command: `bmgocm`.|
+| `ble_mesh_reg_test_perf_client_cmd` | Implements the performance test related command: `bmcperf`. |
+| `ble_mesh_register_node_cmd`  | Implements the node related commands: `bmreg`, `bmoob`, `bminit`, `bmpbearer`, `bmtxpower`.  |
+| `ble_mesh_register_provisioner_cmd` | Implements the provisioner related commands: `bmpreg`, `bmpdev`, `bmpbearer`, `bmpgetn`, `bmpaddn`,`bmpbind`,`bmpkey`. |
+| `register_bluetooth`    | Implements the command to get the MAC address of a BLE device: `btmac` |
+
+# What You Need
+
+Download and flash the `ble_mesh_console/ble_mesh_provisioner` project to your ESP32 development board and then use commands below to implement this demo.
+
+## Implement the demo as a provisioner
+
+The commands that are related to implementing this demo as a provisioner are shown in the table below:
+
+
+| Command        |Description               |
 | ----------------------|------------------------- |
 | `bmreg`  | ble mesh: provisioner/node register callback |
 | `bmpreg` | ble mesh provisioner: register callback |
 | `bmoob`  | ble mesh: provisioner/node config OOB parameters|
 | `bminit` | ble mesh: provisioner/node init |
-| `bmpbearer `  | ble mesh provisioner: enable/disable different bearers |
-| `bmpdev `| ble mesh provisioner: add/delete unprovisioned device |
+| `bmpbearer`  | ble mesh provisioner: enable/disable different bearers |
+| `bmpdev`| ble mesh provisioner: add/delete unprovisioned device |
 
-For example:
-1. bmreg        
+Please follow the steps below to implement this demo as a provisioner. 
 
-This command should be executed before other commands are run.
-This command registers the callback function `ble_mesh_prov_cb` and `ble_mesh_model_cb`.`ble_mesh_prov_cb`. 
-When the device is provisioning, it triggers a series of events that will be processed in the `ble_mesh_prov_cb` function.
-The callback function `ble_mesh_model_cb` is triggered when the server model in the node receives or sends a message.
+1. Enter `bmreg` to register the `ble_mesh_prov_cb` and `ble_mesh_model_cb` callback functions.
+    * `ble_mesh_prov_cb` handles all events triggered when your board is provisioning other devices. 
+    * `ble_mesh_model_cb` handles all events triggered when any server model of your board receives or sends any message. 
 
-2. bmpreg
+2. Enter `bmpreg` to initialize your board as a provisioner, which registers the `ble_mesh_prov_adv_cb` callback function.
+    * `ble_mesh_prov_adv_cb` will be triggered when your board receives an unprovisioned Device beacon broadcasted by an unprovisioned device.
 
-This command is used to initialize the device as a provisioner.
-This command registered the `ble_mesh_prov_adv_cb` callback function.
+3. Enter `bmoob -p 0x5` to initialize all the information needed for a device to be a provisioner. 
+    * The parameter `-p` stands for provisioner and its value `0x5` indicates the starting address assigned to the node by the provisioner.
 
-`ble_mesh_prov_adv_cb` will be triggered when the provisioner receives an unprovision beacon packet broadcast by unprovision device.
+4. Enter `bminit -m 0x01` to initialize the model that is necessary for the provisioner's provisioning. 
+    * The parameter `-m` stands for model and its value `0x01` indicates the model ID of the **Configuration Client** model. 
+    
+    After this command, the initialization now has been completed.
 
-3. bmoob -p 0x5
+5. Enter `bmpbearer -b 0x3 -e 1` to enable bearers, which include the PB-ADV bearer and the PB-GATT bearer. 
+    * The parameter `-b` stands for "bearer" and its value `0x3` indicates both the PB-ADV bearers and the PB-GATT bearers are enabled; 
+    * The parameter `-e` stands for "enable" and its value `1` indicates to enable the bearer. 
+    
+    After this command, the provisioner now can send and receive messages.
 
-This command initializes the information needed as a provisioner. This parameter `-p` indicates the starting address assigned to the node by the provisioner.
+6. Enter `bmpdev -z add -d MAC_address -b 0x3 -a 0 -f 1` to start provisioning an unprovisioned device.
+    
+    * The parameter `MAC_address` indicates the MAC address of the unprovisioned device. Here, you can use the `btmac` command to query the unprovisioned device's MAC address. 
+    * `-f 1` indicates that the device will be immediately provisioning.
 
-4. bminit -m 0x01
 
-This command is used to initialize the model that the provider needs to have.This parameter `-m` indicates target model that needs to be initialized. `0x01` is the model id of the configure client model.After running this command, the initialization required by BLE MESH is complete.
+## 2.2 Implement the demo as a node
 
-5. bmpbearer -b 0x3 -e 1
-This command is used to enable bearer.The bearer is divided into PB-ADV and PB-GATT.`0x3` means both bearers are enabled.After the bearer is enabled, The provisioner can send and receive packets normally.
+The commands that are related to implementing this demo as a node are shown in the table below:
 
-6. bmpdev -z add -d `MAC` -b 0x3 -a 0 -f 1      
-This command is used to provisioning the unprovision device. The device address of the unprovision device is the `MAC` address.
-`-f 1` means that the device will be immediately provisioning.
 
-** Note: `MAC` Is the address of the Bluetooth device，You can use `btmac` to query the device address on devices that need to access the network. **
-
-## 2.2 Implement a node
-
-| File Name    |Description               |
+| Command    |Description               |
 | -------------|------------------------- |
 | `bmreg`  | Adapt the original initialization method to the way it is applied to the console. |
 | `bmoob`  | ble mesh: provisioner/node config OOB parameters |
 | `bminit` | ble mesh: provisioner/node init |
 | `bmnbearer` | ble mesh node: enable/disable different bearers |
 
-For example:
-1. bmreg
-2. bmoob -o 0 -x 0
+Please follow the steps below to implement this demo as a node.
 
-This command is used to initialize the OBB of the device.
+1. Enter `bmreg` to register the `ble_mesh_prov_cb` and `ble_mesh_model_cb` callback functions.
+    * `ble_mesh_prov_cb` handles all events triggered when your board is provisioning other devices. 
+    * `ble_mesh_model_cb` handles all events triggered when any server model of your board receives or sends any message. 
+    
+3. Enter `bmoob -o 0 -x 0` to initialize the OOB information of your board as a node
 
-3. bminit -m 0x1000
+3. Enter `bminit -m 0x1000` to initialize the model that is necessary for the provisioner's provisioning. 
+    * The parameter `-m` stands for model and its value `0x1000` indicates the model ID of the **Generic Onoff Server** model. 
 
-`0x1000` represents the model id of the onoff server model
+4. Enter `bmpbearer -b 0x3 -e 1` to enable bearers, which include the PB-ADV bearer and the PB-GATT bearer. 
+    * The parameter `-b` stands for "bearer" and its value `0x3` indicates both the PB-ADV bearers and the PB-GATT bearers are enabled; 
+    * The parameter `-e` stands for "enable" and its value `1` indicates to enable the bearer. 
+    
+    After this command, the provisioner now can send and receive messages.
 
-4. bmnbearer -b 0x3 -e 1
-This command is used to enable bearer.
-
-# 3. Project Structure
-The folder `ble_mesh_provisioner` contains the following files and subfolders:
-
-| File Name        |Description               |
-| ----------------------|------------------------- |
-| `ble_mesh_adapter`      | Adapt the original initialization method to the way it is applied to the console. |
-| `ble_mesh_cfg_srv_model` | Implemented the definition and initialization of the model related structure. |
-| `ble_mesh_console_lib` | Implemented common format conversion functions. |
-| `ble_mesh_console_main` | The main function, the initialization of the console and the registration of the command |
-| `ble_mesh_console_system`  | Implemented system-related commands `restart`, `free`, `make`. |
-| `ble_mesh_reg_cfg_client_cmd`| Implemented the configure client model related command `bmccm`. |
-| `ble_mesh_reg_gen_onoff_client_cmd`| Implemented the onoff client model related command `bmgocm`.|
-| `ble_mesh_reg_test_perf_client_cmd` | Implemented the performance test related commands `bmcperf`. |
-| `ble_mesh_register_node_cmd`  | Implemented the node related commands `bmreg`, `bmoob`, `bminit`, `bmpbearer`, `bmtxpower`.  |
-| `ble_mesh_register_provisioner_cmd` | Implemented the node provisioner commands `bmpreg`, `bmpdev`, `bmpbearer`, `bmpgetn`, `bmpaddn`,`bmpbind`,`bmpkey`. |
-| `register_bluetooth`    | Implemented a command to get a Bluetooth address `btmac` |
 
 
 # Example Walkthrough
+
 ## Main Entry Point
-Initialize Bluetooth, then initialize the console, and finally register a series of commands.
-How to create a new one of your own commands, please refer to here[ble_mesh_wifi_contixt]
+
+The programâ€™s entry point is the `app_main()` function.
+
+## Initialization
+
+The code block below first initializes the device's Bluetooth-related functions (including the Bluetooth and BLE Mesh), and its console.
+
+### Initializing the Bluetooth
+
 ```c
-void app_main(void)
-{
-    esp_err_t res;
+esp_err_t res;
     nvs_flash_init();
     // init and enable bluetooth
     res = bluetooth_init();
     if (res) {
         printf("esp32_bluetooth_init failed (ret %d)", res);
+```        
+
+This demo calls the `bluetooth_init` function to:
+
+1. First initialize the non-volatile storage library, which allows saving key-value pairs in flash memory and is used by some components. You can save the node's keys and configuration information at `menuconfig` --> `Bluetooth Mesh support` --> `Store Bluetooth Mesh key and configuration persistently`:
+
+     ```c
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        ret = nvs_flash_init();
     }
-	
+    ESP_ERROR_CHECK( ret );
+     ```
+
+2. Initializes the BT controller by first creating a BT controller configuration structure named `esp_bt_controller_config_t` with default settings generated by the `BT_CONTROLLER_INIT_CONFIG_DEFAULT()` macro. The BT controller implements the Host Controller Interface (HCI) on the controller side, the Link Layer (LL) and the Physical Layer (PHY). The BT Controller is invisible to the user applications and deals with the lower layers of the BLE stack. The controller configuration includes setting the BT controller stack size, priority and HCI baud rate. With the settings created, the BT controller is initialized and enabled with the `esp_bt_controller_init()` function:
+
+    ```c
+    esp_bt_controller_config_t bt_cfg = BT_CONTROLLER_INIT_CONFIG_DEFAULT();
+    ret = esp_bt_controller_init(&bt_cfg);
+    ```
+
+    Next, the controller is enabled in BLE Mode. 
+
+    ```c
+    ret = esp_bt_controller_enable(ESP_BT_MODE_BLE);
+    ```
+    The controller should be enabled in `ESP_BT_MODE_BTDM`, if you want to use the dual mode (BLE + BT). There are four Bluetooth modes supported:
+    
+    * `ESP_BT_MODE_IDLE`: Bluetooth not running
+    * `ESP_BT_MODE_BLE`: BLE mode
+    * `ESP_BT_MODE_CLASSIC_BT`: BT Classic mode
+    * `ESP_BT_MODE_BTDM`: Dual mode (BLE + BT Classic)
+
+    After the initialization of the BT controller, the Bluedroid stack, which includes the common definitions and APIs for both BT Classic and BLE, is initialized and enabled by using:
+
+    ```c
+    ret = esp_bluedroid_init();
+    ret = esp_bluedroid_enable();
+    ```
+
+### Initializing the Console
+
+This demo calls the `initialize_console()` function: 
+
+```c
 #if CONFIG_STORE_HISTORY
     initialize_filesystem();
 #endif
     initialize_console();
+```
 
+### Registering Commands
+
+This demo runs the following codes to register commands:
+ 
+```c
     /* Register commands */
     esp_console_register_help_command();
     register_system();
@@ -129,30 +192,12 @@ void app_main(void)
 #if (CONFIG_BT_MESH_CFG_CLI)
     ble_mesh_register_configuration_client_model();
 #endif
-
-    const char *prompt = LOG_COLOR_I "esp32> " LOG_RESET_COLOR;
-
-    /* Figure out if the terminal supports escape sequences */
-    int probe_status = linenoiseProbe();
-    if (probe_status) { /* zero indicates OK */
-        printf("\n"
-               "Your terminal application does not support escape sequences.\n"
-               "Line editing and history features are disabled.\n"
-               "On Windows, try using Putty instead.\n");
-        linenoiseSetDumbMode(1);
-#if CONFIG_LOG_COLORS
-        /* Since the terminal doesn't support escape sequences,
-         * don't use color codes in the prompt.
-         */
-        prompt = "esp32> ";
-#endif //CONFIG_LOG_COLORS
-    }
-    
 ```
 
 ##  Main Program
 
-The main program constantly reads data from the command line.`esp_console_run` will parse the argument and call the callback function of the previously initialized command.
+The main program constantly reads data from the command line. `esp_console_run` will parse the argument and call the callback function of the previously initialized command.
+
 ```c
     /* Main loop */
     while (true) {
@@ -176,6 +221,3 @@ The main program constantly reads data from the command line.`esp_console_run` w
     return;
 }
 ```
-
-
-
