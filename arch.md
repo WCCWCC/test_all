@@ -52,11 +52,19 @@ API 设计方式是基于事件的，每调用一个API都会有对应的事件�
 
 ## 代码结构介绍
 
-## 协议栈框架图   (不能出现 .c 的文件)
+## 协议栈框架图 
+
+![arch](images/arch.png)
+
 框架图的设计是将 Mesh Networking 部分和 Provisioning 合并到一起。Mesh Networking 部分负责设备入网后的消息处理，Provisioning 部分负责设备入网前的消息处理。其中 Provisioning 部分的消息首先会经过 adapt layer，adapt layer 是 BLE 和 BLE MESH的适配层。
 
 其中黄色线条表示： API 最终会调用到 Model Layer，Foundation Layer 和 Provisioning protocol 相关的函数。
 紫色线条表示：     消息传输时会经过的相关的层的处理关系。从左往右的方式描述：
 
+
+
 ## 协议栈详细接口图
+
+![arch](images/interface.png)
+
 接口图详细的描述了每一层对应的实现文件和文件的接口函数，也反应了数据包接收和发送的处理流程。
