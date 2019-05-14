@@ -1,4 +1,3 @@
-
 # ESP BLE MESH 框架
 本文主要介绍 ESP BLE MESH 协议栈的 4 个方面： 协议栈的基本组成，协议栈框架图，协议栈详细接口图，代码目录树。
 
@@ -51,6 +50,36 @@ API 设计方式是基于事件的，每调用一个API都会有对应的事件�
 		* Node Removal procedure：节点移除程序
 
 ## 代码结构介绍
+The functionality provided by each source file is listed below.
+
+| File | Functionality |
+| ------ | ------ |
+| `mesh_core/access.c` | BLE Mesh Access Layer |
+| `mesh_core/adv.c` | A task used to send BLE Mesh advertising packets and APIs used to allocate adv buffers |
+| `mesh_core/beacon.c` | APIs used to handle BLE Mesh Beacons |
+| `mesh_core/cfg_cli.c` | Send Configuration Client messages and receive corresponding response messages |
+| `mesh_core/cfg_srv.c` | Receive Configuration Client messages and send proper response messages |
+| `mesh_core/crypto.c` | Encrypt and decrypt BLE Mesh messages |
+| `mesh_core/friend.c` | BLE Mesh Friend functionality |
+| `mesh_core/health_cli.c` | Send Health Client messages and receive corresponding response messages |
+| `mesh_core/health_srv.c` | Receive Health Client messages and send proper response messages |
+| `mesh_core/lpn.c` | BLE Mesh Low Power functionality |
+| `mesh_core/mesh_bearer_adapt.c` | BLE Mesh Bearer Layer adapter |
+| `mesh_core/mesh_main.c` | Initialize/enable/disable BLE Mesh |
+| `mesh_core/net.c` | BLE Mesh Network Layer, IV Update, Key Refresh |
+| `mesh_core/prov.c` | BLE Mesh Node provisioning (PB-ADV & PB-GATT) |
+| `mesh_core/provisioner_beacon.c` | BLE Mesh Provisioner receives Unprovisioned Device Beacon and Secure Network Beacon |
+| `mesh_core/provisioner_main.c` | BLE Mesh Provisioner manages networking inforamtion, e.g. provisioned nodes, local NetKeys, local AppKeys, etc. |
+| `mesh_core/provisioner_prov.c` | BLE Mesh Provisioner provisioning (PB-ADV & PB-GATT) |
+| `mesh_core/provisioner/proxy.c` | BLE Mesh Provisioner Proxy related functionalities |
+| `mesh_core/proxy.c` | BLE Mesh Node Proxy related functionalities |
+| `mesh_core/settings.c` | BLE Mesh Node NVS storage functionality |
+| `mesh_core/transport.c` | BLE Mesh Lower/Upper Transport Layer |
+| `mesh_models/generic_client.c` | Send BLE Mesh Generic Client messages and receive corresponding response messages |
+| `mesh_models/lighting_client.c` | Send BLE Mesh Lighting Client messages and receive corresponding response messages |
+| `mesh_models/model_common.c` | BLE Mesh model related operations |
+| `mesh_models/sensor_client.c` | Send BLE Mesh Sensor Client messages and receive corresponding response messages |
+| `mesh_models/time_scene_client.c` | Send BLE Mesh Time Scene Client messages and receive corresponding response messages |
 
 ## 协议栈框架图 
 
