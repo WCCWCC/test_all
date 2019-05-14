@@ -97,7 +97,7 @@ API 设计方式是基于事件的，每调用一个API都会有对应的事件�
 
 说明：
 * 黄色线条表示： API 最终会调用到 `Model Layer`，`Foundation Layer` 和 `Provisioning protocol` 相关的函数，不会干涉到协议栈更下层的行为，也 API 就是不能调用协议栈更下层的函数。
-* 紫色线条表示： 消息传输时会经过的相关的层的处理关系。从左往右的方式描述：线条 1 表示从XXXXXXXXXXXX
+* 紫色线条表示： 消息传输时会经过的相关的层的处理关系。
 * `adapt layer` 是 BLE 和 BLE MESH的适配层。`adapt layer` 的主要目的是将 BLE MESH 和 BLE 的代码进行隔离。
 
 
