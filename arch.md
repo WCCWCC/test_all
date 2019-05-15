@@ -16,7 +16,7 @@ ESP BLE MESH 协议栈采用的分层的方式设计的，数据包的处理会�
 比如：`Bluetooth Low Energy Core` <--> `Advertising Bearer` <--> `Network Layer` <--> `Lower Transport Layer` <--> `Upper Transport Layer` <--> `Access Layer` <--> `Foundation Model Layer` <-->`Model Layer` <--> `API/Event` <--> `Aplication`。
 其中每一层对数据包都会进行不同得到处理：`Network Layer`会对数据包进行网络层的加密解密； `Lower Transport Layer`会对数据包进行分包和重组； `Upper Transport Layer`会对数据包进行应用层的加密解密等。
 
-### Mesh Networking (框架图上面有的都要进行描述)
+### Mesh Networking
   蓝牙mesh网络引入了全新的协议栈,这一协议栈建立在低功耗蓝牙技术之上，该协议栈分为7层，其每层所具有的功能如下表所示：
 
 | Layer     | Function |
@@ -93,7 +93,10 @@ ESP BLE MESH 协议栈采用的分层的方式设计的，数据包的处理会�
 | `mesh_core/mesh_bearer_adapt.c` | BLE Mesh Bearer Layer adapter，This file provides the interfaces used to receive and send BLE Mesh ADV & GATT related packets. |
 
 #### Provisioning 实现
-这部分代实现的时候考虑到 Node/Provisioner 的共存，
+这部分代实现的时候考虑到 Node/Provisioner 的共存，将 Provisioning 部分拆分为两大块。 
+* `prov.c`,`proxy.c`,`beacon.c`实现了节点（Node）端的配置行为。
+
+* `provisioner_prov.c`,`provisioner_proxy.c`,`provisioner_beacon.c`,`provisioner_main.c`实现了 Provisioner 的配置行为。
 
 | File | Functionality |
 | ------ | ------ |
@@ -107,12 +110,13 @@ ESP BLE MESH 协议栈采用的分层的方式设计的，数据包的处理会�
 | `mesh_core/provisioner_proxy.c` | BLE Mesh Provisioner Proxy related functionalities |
 | `mesh_core/provisioner_beacon.c` | BLE Mesh Provisioner receives Unprovisioned Device Beacon and Secure Network Beacon |
 | `mesh_core/provisioner_main.c` | BLE Mesh Provisioner manages networking inforamtion, e.g. provisioned nodes, local NetKeys, local AppKeys, etc. |
-| `mesh_core/mesh_main.c` | Initialize/enable/disable BLE Mesh |
 
 
-## 独立模块
+## 独立模块实现
+采用独立模块的设计主要考虑到两个因素：
+* 首先该模块不具备分层实现的特征，其次该模块能够完全独立起来，也就是该模块不需要依赖于其它模块的实现。
+* 模块中的函数会被反复使用到，那么设计成模块是合理的。
 
-friend + lpn ++
 
 | File | Functionality |
 | ------ | ------ |
@@ -120,7 +124,7 @@ friend + lpn ++
 | `mesh_core/lpn.c` | BLE Mesh Low Power functionality |
 | `mesh_core/friend.c` | BLE Mesh Friend functionality |
 | `mesh_core/settings.c` | BLE Mesh Node NVS storage functionality |
-
+| `mesh_core/mesh_main.c` | Initialize/enable/disable BLE Mesh |
 
 ## Other:
 ESP BLE MESH 协议栈相关任务：
