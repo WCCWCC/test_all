@@ -47,7 +47,7 @@ ESP BLE MESH 协议栈采用的分层的方式设计的，数据包的处理会�
 | GATT承载层 (GATT Bearer) | The GATT bearer uses the Proxy protocol to transmit and receive `Proxy PDUs` between two devices over a GATT connection |
 | 广播承载层 (Advertising Bearer) | When using the advertising bearer, a mesh packet shall be sent in the Advertising Data of a `Bluetooth Low Energy advertising PDU` using the Mesh Message AD Type |
 
-** 代理协议 (Proxy Protocol)， GATT承载层 (GATT Bearer)， 广播承载层 (Advertising Bearer)在协议栈的 Provisioning 和 Mesh Networking 部分是相同的，也就是共用的 **
+**代理协议 (Proxy Protocol)， GATT承载层 (GATT Bearer)， 广播承载层 (Advertising Bearer)在协议栈的 Provisioning 和 Mesh Networking 部分是相同的，也就是共用的。**
 
 ### 应用层
 用户在应用层使用 ESP BLE MESH 相关功能的方式是调用 ESP BLE MESH 协议栈提供的API，且需要处理协议栈上报应用程的的Event。
