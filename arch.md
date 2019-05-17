@@ -155,7 +155,7 @@ ESP BLE Mesh 协议栈代码在设计时主要用到了两个思想：分层思�
 | `mesh_core/adv.c` | A task used to send BLE Mesh advertising packets and APIs used to allocate adv buffers |
 | `mesh_core/mesh_bearer_adapt.c` | BLE Mesh Bearer Layer adapter，This file provides the interfaces used to receive and send BLE Mesh ADV & GATT related packets. |
 
-				表2.1  `Mesh Networking`文件描述
+					表2.1  `Mesh Networking`文件描述
 
 **`mesh_bearer_adapt.c` 是协议栈框架图中的的 `Advertising Bearer`和`GATT  Bearer`的实现。**
 
@@ -170,7 +170,7 @@ ESP BLE Mesh 协议栈代码在设计时主要用到了两个思想：分层思�
 | `mesh_core/proxy.c` | BLE Mesh Node Proxy related functionalities |
 | `mesh_core/beacon.c` | APIs used to handle BLE Mesh Beacons |
 
-				表2.2  `Mesh Provisioning (Node)`文件描述
+					表2.2  `Mesh Provisioning (Node)`文件描述
 
 * `provisioner_prov.c`,`provisioner_proxy.c`,`provisioner_beacon.c`,`provisioner_main.c`实现了 Provisioner 配置设备的功能。
 
@@ -181,7 +181,7 @@ ESP BLE Mesh 协议栈代码在设计时主要用到了两个思想：分层思�
 | `mesh_core/provisioner_beacon.c` | BLE Mesh Provisioner receives Unprovisioned Device Beacon and Secure Network Beacon |
 | `mesh_core/provisioner_main.c` | BLE Mesh Provisioner manages networking inforamtion, e.g. provisioned nodes, local NetKeys, local AppKeys, etc. |
 
-				表2.3  `Mesh Provisioning(Provisioner)`文件描述
+					表2.3  `Mesh Provisioning(Provisioner)`文件描述
 
 ### 2.3 独立模块实现
 
