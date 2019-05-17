@@ -14,9 +14,9 @@ ESP BLE Mesh 协议栈实现了 Mesh Profile 的所有功能，并通过了蓝�
 
 从协议栈框架图中我们能获取到如下信息：
 * ESP BLE MESH 协议栈主体由3大部分组成：`Mesh Networking`(黄色框图)，`Mesh Provisioning`(红色框图) 和 `Applications`(蓝色框图)组成。
- * Mesh Networking 负责 Node 以及 Provisioner 的网络消息处理等。
- * Mesh Provisioning负责 Node 以及Provisioner 的启动配置流程。
- * `Applications`通过调用 API 和处理 Event 的方式和协议栈中的 `Mesh Networking` 与 `Mesh Provisioning` 进行交互。
+   * Mesh Networking 负责 Node 以及 Provisioner 的网络消息处理等。
+   * Mesh Provisioning负责 Node 以及Provisioner 的启动配置流程。
+   * `Applications`通过调用 API 和处理 Event 的方式和协议栈中的 `Mesh Networking` 与 `Mesh Provisioning` 进行交互。
 
 * ESP BLE Mesh协议栈建立在低功耗蓝牙技术之上,通过承载层使用低功耗蓝牙的广播以及连接通道进行数据交互，其中 承载层包括   `Advertising Bearer` 和 `GATT  Bearer` 。
 
