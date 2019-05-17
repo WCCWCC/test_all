@@ -114,7 +114,7 @@ ESP BLE Mesh 协议栈实现了 Mesh Profile 的所有功能，并通过了蓝�
 ** Note：用户可以根据协议栈接口图中反应的关系去分析代码。 **
 
 ###2.1 Mesh Networking 实现
-
+`Mesh Networking` 中相关文件与每个文件实现的功能如下表所示：
 
 | File | Functionality |
 | ------ | ------ |
@@ -138,7 +138,6 @@ ESP BLE Mesh 协议栈实现了 Mesh Profile 的所有功能，并通过了蓝�
 ### 2.2 Mesh Provisioning 实现
 这部分代实现的时候考虑到 Node/Provisioner 的共存，将 Provisioning 部分拆分为两大块。
 * `prov.c`,`proxy.c`,`beacon.c` 实现了节点（Node）端的配置行为。
-* `provisioner_prov.c`,`provisioner_proxy.c`,`provisioner_beacon.c`,`provisioner_main.c`实现了 Provisioner 配置设备的功能。
 
 | File | Functionality |
 | ------ | ------ |
@@ -146,13 +145,14 @@ ESP BLE Mesh 协议栈实现了 Mesh Profile 的所有功能，并通过了蓝�
 | `mesh_core/proxy.c` | BLE Mesh Node Proxy related functionalities |
 | `mesh_core/beacon.c` | APIs used to handle BLE Mesh Beacons |
 
+* `provisioner_prov.c`,`provisioner_proxy.c`,`provisioner_beacon.c`,`provisioner_main.c`实现了 Provisioner 配置设备的功能。
+
 | File | Functionality |
 | ------ | ------ |
 | `mesh_core/provisioner_prov.c` | BLE Mesh Provisioner provisioning (PB-ADV & PB-GATT) |
 | `mesh_core/provisioner_proxy.c` | BLE Mesh Provisioner Proxy related functionalities |
 | `mesh_core/provisioner_beacon.c` | BLE Mesh Provisioner receives Unprovisioned Device Beacon and Secure Network Beacon |
 | `mesh_core/provisioner_main.c` | BLE Mesh Provisioner manages networking inforamtion, e.g. provisioned nodes, local NetKeys, local AppKeys, etc. |
-
 
 ### 2.3 独立模块实现
 采用独立模块的设计主要考虑到两个因素：
