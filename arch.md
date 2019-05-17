@@ -111,7 +111,7 @@ ESP BLE Mesh 协议栈实现了 Mesh Profile 的所有功能，并通过了蓝�
 
 * `provisioner_proxy.c`--`provisioner_prov.c`--`provisioner_beacon.c`--`provisioner_main.c`  这一列对应了Mesh Provisioning 中的Provisioner 配置设备的功能的实现。这一列中的文件与文件的数据交互以及所在的层次结构在图上均有具体的描述。
 
-** Note：用户可以根据协议栈接口图中反应的关系去分析代码。 **
+**Note：用户可以根据协议栈接口图中反应的关系去分析代码。**
 
 ###2.1 Mesh Networking 实现
 `Mesh Networking` 中相关文件与每个文件实现的功能如下表所示：
