@@ -1,29 +1,30 @@
-# ESP BLE MESH 框架
-本文首先对 ESP BLE MESH 协议栈的主体框架进行了介绍，然后介绍了协议栈文件对应的实现与详细的协议栈接口，最后描述了与协议栈相关的任务(task)和一些可选的辅助程序。
+# ESP BLE Mesh 框架
+本文首先对 ESP BLE Mesh 协议栈的主体框架进行了介绍，然后介绍了协议栈文件对应的实现与详细的协议栈接口，最后描述了与协议栈相关的任务(task)和一些可选的辅助程序。（建议：本手册为 ESP BLE Mesh 的架构简介, 主要分几章，每一章介绍了哪些内容）
 
 ## 协议栈框架图
 
 ![arch](images/arch.png)
 
-ESP BLE MESH 协议栈主体由2大部分组成：`Mesh Networking`(黄色框图)，`Provisioning`(红色框图) 组成。
-* Mesh Networking 负责设备入网后的消息处理。
-* Provisioning 负责设备入网前的消息处理。
+
+ESP BLE Mesh 协议栈主体由2部分组成：`Mesh Networking`(黄色框图)，`Mesh？ Provisioning`(红色框图) 组成（按照这个描述，建议框图中使用线将两部分所包含的内容框出来）。
+* Mesh Networking 负责设备入网后的消息处理 （负责 Node 以及 Provisioner 的网络消息处理等）。
+* Mesh Provisioning 负责设备入网前的消息处理（负责 Node 以及Provisioner 的启动配置流程）。
 
 应用层(蓝色框图)通过调用 API 和处理 Event 的方式和协议栈中的 `Mesh Networking` 与 `Provisioning` 进行交互。
-ESP BLE MESH 协议栈建立在低功耗蓝牙技术之上,通过适配层和 `Bluetooth Low Energy Core` 进行交互。其中 适配层由 `Advertising Bearer` 和 `GATT  Bearer` 组成。
+ESP BLE MESH 协议栈建立在低功耗蓝牙技术之上,通过承载层使用低功耗蓝牙的广播以及连接通道进行数据交互，其中 承载层包括 `Advertising Bearer` 和 `GATT  Bearer` 。
 
-ESP BLE MESH 协议栈采用的分层的方式设计的，数据包的处理会经过的层处理顺序是固定的，也就是数据包的处理过程会形成一个`处理流`。`处理流`描述的是数据包经过了哪些层与层处理的先后顺序。从框架图上可以知道主要有4种类型的处理流。
-比如：`Bluetooth Low Energy Core` <--> `Advertising Bearer` <--> `Network Layer` <--> `Lower Transport Layer` <--> `Upper Transport Layer` <--> `Access Layer` <--> `Foundation Model Layer` <-->`Model Layer` <--> `API/Event` <--> `Aplication`。
-其中每一层对数据包都会进行不同得到处理：`Network Layer`会对数据包进行网络层的加密解密； `Lower Transport Layer`会对数据包进行分包和重组； `Upper Transport Layer`会对数据包进行应用层的加密解密等。
+ESP BLE MESH 协议栈采用的分层的方式设计的，数据包的处理会经过的层处理顺序是固定的，也就是数据包的处理过程会形成一个`处理流`。`处理流`描述的是数据包经过了哪些层与层处理的先后顺序。从框架图上可以知道主要有4种类型的处理流。（从框图上看不出吧，应该是：框图中包含4 种，而且如果这边提及了 4 种，下面就要给出是哪 4 种，这个不是举一个例子就能概括的。同时介绍方式尽量避免使用口头的方式来描述，例如处理流等）
+比如：`Bluetooth Low Energy Core` <--> `Advertising Bearer` <--> `Network Layer` <--> `Lower Transport Layer` <--> `Upper Transport Layer` <--> `Access Layer` <--> `Foundation Model Layer` <-->`Model Layer` <--> `API/Event` <--> `Application`。
+其中每一层对数据包都会进行不同的处理：`Network Layer`会对网络数据包进行模糊化/去模糊化, 加密/解密等； `Lower Transport Layer`会对数据包进行分包和重组； `Upper Transport Layer`会对数据包进行应用层的加密解密等。
 
 ### Mesh Networking
- 协议栈框架图中的 `Mesh Networking` 每一层的具体功能如下表所示：
+ 协议栈框图中 `Mesh Networking` 所包含的每一层具体功能如下表所示：
 
 | Layer     | Function |
 | --------- | -------- |
-| 模型（models）    | 模型层与模型等的实施、以及诸如行为、消息、状态等的实施有关。|
-| 接入层（access layer）     | 负责应用数据的格式、定义并控制上层传输层中执行的加密和解密过程，并在将数据转发到协议栈之前，验证接收到的数据是否适用于正确的网络和应用。|
-| 基础模型（foundation models）| 基础模型层负责实现与mesh网络配置和管理相关的模型。|
+| 模型（Model Layer）    | 模型层与模型的实施， 包括诸如模型的行为、消息处理、状态改变等相关。|
+| 接入层（Access layer）     | 接入层主要负责应用数据的格式、定义并控制上层传输层对数据包的加密和解密等，并在将数据转发到协议栈之前（转发到协议栈之前？这个看不懂），验证接收到的数据是否适用于正确的网络和应用。|（access layer 和 foundation models 的顺序反了）
+| 基础模型（foundation model Layer）| 基础模型层负责实现与mesh网络配置和管理相关的模型。|
 | 上层传输层（upper transport layer）| 负责对接入层进出的应用数据进行加密、解密和认证。它还负责称为“传输控制消息”（transport control messages）这一特殊的消息，包括与“friendship”相关的心跳和消息。 |
 | 底层传输层（lower transport layer）| 在需要之时，底层传输层能够处理PDU的分段和重组。 |
 | 网络层（network layer） | 网络层定义了各种消息地址类型和网络消息格式。中继和代理行为通过网络层实施。 |
@@ -32,10 +33,10 @@ ESP BLE MESH 协议栈采用的分层的方式设计的，数据包的处理会�
 | GATT承载层 (GATT Bearer) | The GATT bearer uses the Proxy protocol to transmit and receive `Proxy PDUs` between two devices over a GATT connection |
 | 代理服务 (Proxy Service) | The Mesh Proxy Service is used to enable a server to send and receive Proxy PDUs with a client. |
 
-**Note：承载层（bearer layer）定义了如何使用底层低功耗堆栈传输PDU。目前定义了两个承载层：广播承载层（Advertising Bearer）和 GATT 承载层。其中 GATT 承载层由 `GATT Bearer`，`Proxy Service`,`Proxy Protocol`组成，广播承载层由 Advertising Bearer 组成。**
+**Note：承载层（bearer layer）定义了如何使用低功耗堆栈（堆栈？）传输Mesh 数据包。目前定义了两个承载层：广播承载层（Advertising Bearer）和 GATT 承载层。（同时如果这边用 Note 来标注承载层包含了两个，那么上面直接介绍 bearer layer 就可以了）
 
 ###  Provisioning
- 协议栈框架图中的 `Provisioning` 每一层的具体功能如下表所示：
+ 协议栈框图中 `Provisioning` 所包含的每一层具体功能如下表所示：
 
 | Layer     | Function |
 | --------- | -------  |
@@ -47,35 +48,36 @@ ESP BLE MESH 协议栈采用的分层的方式设计的，数据包的处理会�
 | GATT承载层 (GATT Bearer) | The GATT bearer uses the Proxy protocol to transmit and receive `Proxy PDUs` between two devices over a GATT connection |
 | 广播承载层 (Advertising Bearer) | When using the advertising bearer, a mesh packet shall be sent in the Advertising Data of a `Bluetooth Low Energy advertising PDU` using the Mesh Message AD Type |
 
-**代理协议 (Proxy Protocol)， GATT承载层 (GATT Bearer)， 广播承载层 (Advertising Bearer)在协议栈的 Provisioning 和 Mesh Networking 部分是相同的，也就是共用的。**
+**代理协议 (Proxy Protocol)， GATT承载层 (GATT Bearer)和广播承载层 (Advertising Bearer)在Mesh Provisioning 和 Mesh Networking 中均可能使用。**
 
-### 应用层
-用户在应用层使用 ESP BLE MESH 相关功能的方式是调用 ESP BLE MESH 协议栈提供的API，且需要处理协议栈上报应用程的的Event。
+### 应用层（上面介绍的两部分，应用层和 networking & provisioning 并列，改成 3 部分？）
+应用层通过调用 ESP BLE MESH 协议栈提供的API，以及处理协议栈上报的Event来实现相应的功能。
 
-应用层（`Applications`）与 `API / Event`的交互：
+应用层（`Applications`）与 `API / Event`的交互：（不能称为 交互吧？）
 * 应用层调用 API ：
-用户调用 API 主要进行3大类进行操作：
-  * 在配网过程中的 API，进行配网操作。
-  * 使用 Model 进行通讯的 API，通讯是指的是通过 Model 在节点与节点之间收发消息。
-  * 使用 API 设置本地变量，也就是设置节点自己拥有的数据结构。
+应用层调用 API 主要进行如下操作：
+  * 调用配网相关API进行配网操作。
+  * 调用 model 相关的 api 发送消息。
+  * 调用设备属性相关的 api 获取设备的本地信息。
 * 应用层处理 Event ：
 应用层的设计方式是基于事件的，事件会携带参数给应用层。
-事件主要分为两大类，调用 API 完成事件和 ESP BLE MESH 协议栈上报给用户的事件。
-事件的处理是应用层向协议栈注册回调函数，回调函数中会实现对应的事件的处理程序。
+事件主要分为两大类，调用 API 完成的事件以及 协议栈上报给应用层的事件，例如接收到节点消息等。
+事件通过应用层注册的回调函数进行上报，同时回调函数中也会包含对事件的相应处理。
 
 `API / Event` 与 ESP BLE MESH 协议栈的交互：
-用户使用的 API 主要调用`Mesh Networking`，`Provisioning` 协议栈顶层提供的函数，也就是`Model Layer`,`Foundation Model Layer`,`Provisioning Protocol`提供的函数。`API / Event` 和协议栈的交互不会跨越协议栈的层进行操作。比如 API 不会调用到 `Network Layer` 相关的函数。
+ API 通过调用 协议栈提供的mesh networking，mesh Provisioning相关的函数来实现收发消息、启动配置等操作，（补充event 的描述）
 
 ## 协议栈实现
 协议栈代码在设计时主要用到了两个思想：分层思想和模块思想。
 * 分层思想：从协议栈描述的层去设计文件，该类型的文件有一个明显的特征就是存在接口函数。其中 `Mesh Networking` 和 `Provisioning `都是基于该思想进行实现的。
-* 模块思想：该文件实现一个独立的功能，供其它程序去调用。
+* 模块思想：该文件实现一个独立的功能，供其它程序去调用。（）
 
 ### 协议栈接口图
 
 ![arch](images/interface.png)
 
-接口图详细的描述了每一层对应的实现文件和文件的接口函数，也反应了数据包接收和发送的处理流程。
+
+接口图详细的描述了每一层对应的实现文件和文件的接口函数，也反应了数据包接收和发送的处理流程。（你这个描述太简单了吧，建议学习以下 ESP32 Bluetooth Architecture 的描述）
 
 #### Mesh Networking 实现
 
@@ -137,8 +139,8 @@ ESP BLE MESH 协议栈相关任务：
 
  * `adv_task`: 此任务主要用于发送 mesh 的广播数据包。
 
-辅助程序：
-设计为用户可选的，不是协议栈的主体，但也十分重要。辅助程序的设计一般通过 menuconfig 的方式实现代码的动态裁剪。
+辅助程序：（辅助程序换个说法）
+设计为用户可选的，不是协议栈的主体，但也十分重要。辅助程序的设计一般通过 menuconfig 的方式实现代码的动态裁剪（动态剪裁？）。
 * feature
 	* friend ：实现朋友特性
 	* lpn：实现低功耗特性
