@@ -39,7 +39,7 @@ ESP BLE Mesh 协议栈是采用分层的方式进行设计的，数据包的处�
  * 实现了 Mesh 的节点特性(lpn,friend...)
  * 更多功能，请见[链接]()
 
- `Mesh Networking`功能的实现是基于层次结构的，共有 7 层组成，每一层的功能如下表所示：
+ `Mesh Networking`功能的实现是基于层次结构的，共有 7 层组成，每一层的功能如表 1.1 所示：
 
 | Layer     | Function |
 | --------- | -------- |
@@ -68,7 +68,7 @@ ESP BLE Mesh 协议栈是采用分层的方式进行设计的，数据包的处�
  * 实现了 Mesh 网络资源的分配(单播地址，Iv index，NetKey)。
  * 更多功能，请见[链接]()
  
-`Mesh Provisioning`功能的实现是基于层次结构的，协议栈框架图中的 `Mesh Provisioning` 每一层的具体功能如下表所示：
+`Mesh Provisioning`功能的实现是基于层次结构的，协议栈框架图中的 `Mesh Provisioning` 每一层的具体功能如表 1.2 所示：
 
 | Layer     | Function |
 | --------- | -------  |
@@ -136,7 +136,7 @@ ESP BLE Mesh 协议栈代码在设计时主要用到了两个思想：分层思�
 
 ### 2.1 Mesh Networking 实现
 
-`Mesh Networking` 中相关文件与每个文件实现的功能如下表所示：
+`Mesh Networking` 中相关文件与每个文件实现的功能如表 2.1 所示：
 
 | File | Functionality |
 | ------ | ------ |
@@ -162,7 +162,7 @@ ESP BLE Mesh 协议栈代码在设计时主要用到了两个思想：分层思�
 ### 2.2 Mesh Provisioning 实现
 
 这部分代实现的时候考虑到 Node/Provisioner 的共存，将 Provisioning 部分拆分为两大块。
-* `prov.c`,`proxy.c`,`beacon.c` 实现了节点（Node）端的配置行为。
+* `prov.c`,`proxy.c`,`beacon.c` 实现了节点（Node）端的配置行为，如表 2.2 所示：
 
 | File | Functionality |
 | ------ | ------ |
@@ -172,7 +172,7 @@ ESP BLE Mesh 协议栈代码在设计时主要用到了两个思想：分层思�
 
 					表2.2  Mesh Provisioning (Node) 文件描述
 
-* `provisioner_prov.c`,`provisioner_proxy.c`,`provisioner_beacon.c`,`provisioner_main.c`实现了 Provisioner 配置设备的功能。
+* `provisioner_prov.c`,`provisioner_proxy.c`,`provisioner_beacon.c`,`provisioner_main.c`实现了 Provisioner 配置设备的功能，如表 2.3 所示：
 
 | File | Functionality |
 | ------ | ------ |
@@ -188,6 +188,7 @@ ESP BLE Mesh 协议栈代码在设计时主要用到了两个思想：分层思�
 采用独立模块的设计主要考虑到两个因素：
 * 首先该模块不具备分层实现的特征，其次该模块能够完全独立起来，也就是该模块不需要依赖于其它模块的实现。
 * 模块中的函数会被反复使用到，那么设计成模块是合理的。
+独立模块如表 2.4 所示：
 
 | File | Functionality |
 | ------ | ------ |
