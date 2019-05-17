@@ -54,6 +54,8 @@ ESP BLE Mesh 协议栈是采用分层的方式进行设计的，数据包的处�
 | GATT承载层 (GATT Bearer) | The GATT bearer uses the Proxy protocol to transmit and receive `Proxy PDUs` between two devices over a GATT connection |
 | 代理服务 (Proxy Service) | The Mesh Proxy Service is used to enable a server to send and receive Proxy PDUs with a client. |
 
+					 表1.1  `Mesh Networking`框架描述
+
 **Note：承载层（bearer layer）定义了如何使用底层低功耗协议传输 BLE Mesh 数据包，目前定义了广播承载层（Advertising Bearer）和 GATT 承载层。**
 * GATT 承载层由 `GATT Bearer`，`Proxy Service`,`Proxy Protocol`组成
 * 广播承载层由 Advertising Bearer 组成。
@@ -77,6 +79,8 @@ ESP BLE Mesh 协议栈是采用分层的方式进行设计的，数据包的处�
 | 配置服务 (Provisioning Service) | The Mesh Provisioning Service allows a Provisioning Client to provision a Provisioning Server to allow it to participate in the mesh network |
 | GATT承载层 (GATT Bearer) | The GATT bearer uses the Proxy protocol to transmit and receive `Proxy PDUs` between two devices over a GATT connection |
 | 广播承载层 (Advertising Bearer) | When using the advertising bearer, a mesh packet shall be sent in the Advertising Data of a `Bluetooth Low Energy advertising PDU` using the Mesh Message AD Type |
+
+					表1.2  `Mesh Provisioningg`框架描述
 
 **Note: 代理协议 (Proxy Protocol)， GATT承载层 (GATT Bearer)和广播承载层 (Advertising Bearer)在协议栈的 Mesh Provisioning 和 Mesh Networking 中均可能使用。**
 
@@ -151,6 +155,8 @@ ESP BLE Mesh 协议栈代码在设计时主要用到了两个思想：分层思�
 | `mesh_core/adv.c` | A task used to send BLE Mesh advertising packets and APIs used to allocate adv buffers |
 | `mesh_core/mesh_bearer_adapt.c` | BLE Mesh Bearer Layer adapter，This file provides the interfaces used to receive and send BLE Mesh ADV & GATT related packets. |
 
+				表2.1  `Mesh Networking`文件描述
+
 **`mesh_bearer_adapt.c` 是协议栈框架图中的的 `Advertising Bearer`和`GATT  Bearer`的实现。**
 
 ### 2.2 Mesh Provisioning 实现
@@ -164,6 +170,8 @@ ESP BLE Mesh 协议栈代码在设计时主要用到了两个思想：分层思�
 | `mesh_core/proxy.c` | BLE Mesh Node Proxy related functionalities |
 | `mesh_core/beacon.c` | APIs used to handle BLE Mesh Beacons |
 
+				表2.2  `Mesh Provisioning (Node)`文件描述
+
 * `provisioner_prov.c`,`provisioner_proxy.c`,`provisioner_beacon.c`,`provisioner_main.c`实现了 Provisioner 配置设备的功能。
 
 | File | Functionality |
@@ -172,6 +180,8 @@ ESP BLE Mesh 协议栈代码在设计时主要用到了两个思想：分层思�
 | `mesh_core/provisioner_proxy.c` | BLE Mesh Provisioner Proxy related functionalities |
 | `mesh_core/provisioner_beacon.c` | BLE Mesh Provisioner receives Unprovisioned Device Beacon and Secure Network Beacon |
 | `mesh_core/provisioner_main.c` | BLE Mesh Provisioner manages networking inforamtion, e.g. provisioned nodes, local NetKeys, local AppKeys, etc. |
+
+				表2.3  `Mesh Provisioning(Provisioner)`文件描述
 
 ### 2.3 独立模块实现
 
@@ -189,9 +199,8 @@ ESP BLE Mesh 协议栈代码在设计时主要用到了两个思想：分层思�
 
 ## 3. 辅助程序:
 
-什么是辅助程序？
-辅助程序的功用？
-设计为用户可选的，不是协议栈的主体，但也十分重要。辅助程序的设计一般通过 menuconfig 的方式实现代码的裁剪。
+辅助程序指的是 ESP BLE Mesh 协议栈中非必须的程序。
+辅助程序不是协议栈的主体，但也十分重要。辅助程序的设计一般通过 menuconfig 的方式实现代码的裁剪。
 * feature
 	* friend ：实现朋友特性
 	* lpn：实现低功耗特性
