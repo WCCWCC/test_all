@@ -8,6 +8,7 @@ ESP BLE Mesh 协议栈是对 [Mesh Profile]() 的实现。本文将从协议栈�
    * 讲述了 ESP BLE Mesh 协议栈的辅助程序，比如 Mesh 网络管理，Mesh feature等。
 	
 ## 1. 协议栈框架
+
 ESP BLE Mesh 协议栈实现了 [Mesh Profile]() 的所有功能，并通过了蓝牙官方[认证]()，ESP BLE Mesh 协议栈框架如图 1.1 所示：
 
 ![arch](images/arch.png)
@@ -28,6 +29,7 @@ ESP BLE Mesh 协议栈是采用分层的方式进行设计的，数据包的处�
 	* Upper Transport Layer`会对数据包进行应用层的加密解密等。
 
 ### 1.1 Mesh Networking
+
  协议栈框架图中的 `Mesh Networking` 实现了如下
  * 实现了 Mesh 网络中的成员之间( Node，provisioner )的通讯。
  * 实现了 Mesh 网络中的消息的加密解密。
@@ -56,6 +58,7 @@ ESP BLE Mesh 协议栈是采用分层的方式进行设计的，数据包的处�
 * 广播承载层由 Advertising Bearer 组成。
 
 ### 1.2 Mesh Provisioning
+
 协议栈框架图中的 `Mesh Provisioning` 实现了如下功能：
  * 实现了 Mesh 网络的组建
  * 实现了对设备的配置
@@ -76,8 +79,8 @@ ESP BLE Mesh 协议栈是采用分层的方式进行设计的，数据包的处�
 
 **Note: 代理协议 (Proxy Protocol)， GATT承载层 (GATT Bearer)和广播承载层 (Advertising Bearer)在协议栈的 Mesh Provisioning 和 Mesh Networking 中均可能使用。**
 
-
 ### 1.3 应用层
+
 协议栈框架图中的 `Applications` 是基于 BLE Mesh 的一些常见应用,比如网关，灯的应用程序等。
 
 应用层的工作原理
@@ -100,6 +103,7 @@ ESP BLE Mesh 协议栈是采用分层的方式进行设计的，数据包的处�
 * `API / Event` 和协议栈的交互不会跨越协议栈的层进行操作。比如 API 不会调用到 `Network Layer` 相关的函数。
 
 ## 2. 协议栈实现
+
 ESP BLE Mesh 协议栈代码在设计时主要用到了两个思想：分层思想和模块思想。本章节根据设计思想进行分类，其中 2.1 和 2.2 章节使用的是分层实现方法，2.3 章节使用的是模块实现方法。
 
 * **分层思想**：
@@ -124,7 +128,8 @@ ESP BLE Mesh 协议栈代码在设计时主要用到了两个思想：分层思�
 
 **Note：用户可以根据协议栈接口图中反应的关系去分析代码。**
 
-###2.1 Mesh Networking 实现
+### 2.1 Mesh Networking 实现
+
 `Mesh Networking` 中相关文件与每个文件实现的功能如下表所示：
 
 | File | Functionality |
@@ -147,6 +152,7 @@ ESP BLE Mesh 协议栈代码在设计时主要用到了两个思想：分层思�
 **`mesh_bearer_adapt.c` 是协议栈框架图中的的 `Advertising Bearer`和`GATT  Bearer`的实现。**
 
 ### 2.2 Mesh Provisioning 实现
+
 这部分代实现的时候考虑到 Node/Provisioner 的共存，将 Provisioning 部分拆分为两大块。
 * `prov.c`,`proxy.c`,`beacon.c` 实现了节点（Node）端的配置行为。
 
@@ -166,6 +172,7 @@ ESP BLE Mesh 协议栈代码在设计时主要用到了两个思想：分层思�
 | `mesh_core/provisioner_main.c` | BLE Mesh Provisioner manages networking inforamtion, e.g. provisioned nodes, local NetKeys, local AppKeys, etc. |
 
 ### 2.3 独立模块实现
+
 采用独立模块的设计主要考虑到两个因素：
 * 首先该模块不具备分层实现的特征，其次该模块能够完全独立起来，也就是该模块不需要依赖于其它模块的实现。
 * 模块中的函数会被反复使用到，那么设计成模块是合理的。
@@ -179,6 +186,7 @@ ESP BLE Mesh 协议栈代码在设计时主要用到了两个思想：分层思�
 | `mesh_core/mesh_main.c` | Initialize/enable/disable BLE Mesh |
 
 ## 3. 辅助程序:
+
 什么是辅助程序？
 辅助程序的功用？
 设计为用户可选的，不是协议栈的主体，但也十分重要。辅助程序的设计一般通过 menuconfig 的方式实现代码的裁剪。
