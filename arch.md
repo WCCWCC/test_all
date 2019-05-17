@@ -91,6 +91,7 @@ ESP BLE Mesh 协议栈实现了 Mesh Profile 的所有功能，并通过了蓝�
  * 事件通过应用层注册的回调函数进行上报，同时回调函数中也会包含对事件的相应处理。
 
 `API / Event` 与 ESP BLE MESH 协议栈的交互：
+
 用户使用的 API 主要调用`Mesh Networking`，`Mesh Provisioning` 协议栈顶层提供的函数，也就是`Model Layer`,`Foundation Model Layer`,`Provisioning Protocol`提供的函数。`API / Event` 和协议栈的交互不会跨越协议栈的层进行操作。比如 API 不会调用到 `Network Layer` 相关的函数。
 
 ## 2. 协议栈实现
