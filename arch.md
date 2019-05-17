@@ -12,7 +12,7 @@ ESP BLE Mesh 协议栈是对 [Mesh Profile]() 的实现。本文将从协议栈�
 ESP BLE Mesh 协议栈实现了 [Mesh Profile]() 的所有功能，并通过了蓝牙官方[认证]()，ESP BLE Mesh 协议栈框架如图 1.1 所示：
 
 ![arch](images/arch.png)
-.                                                图 1.1 协议栈框架图
+<center>图 1.1 协议栈框架图</center>                     
 
 ESP BLE MESH 协议栈主体由`Mesh Networking`(黄色框图)，`Mesh Provisioning`(红色框图) 和 `Applications`(蓝色框图) 组成。
    * Mesh Networking 负责 Node 以及 Provisioner 的网络消息处理等。
