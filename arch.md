@@ -13,7 +13,7 @@ ESP BLE Mesh 协议栈实现了 [Mesh Profile]() 的所有功能，并通过了�
 
 ![arch](images/arch.png)
 
-							 图 1.1 协议栈框架图
+						图 1.1 协议栈框架图
 
 ESP BLE MESH 协议栈主体由`Mesh Networking`(黄色框图)，`Mesh Provisioning`(红色框图) 和 `Applications`(蓝色框图) 组成。
    * Mesh Networking 负责 Node 以及 Provisioner 的网络消息处理等。
@@ -114,7 +114,7 @@ ESP BLE Mesh 协议栈代码在设计时主要用到了两个思想：分层思�
 	* 每个文件实现一个独立的功能，供其它程序去调用。
 
 ![arch](images/interface.png)
-                                               图 2.1 协议栈接口图
+						图 2.1 协议栈接口图
 					      
 协议栈接口图主要由 3 列组成
 
