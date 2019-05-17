@@ -197,6 +197,8 @@ ESP BLE Mesh 协议栈代码在设计时主要用到了两个思想：分层思�
 | `mesh_core/settings.c` | BLE Mesh Node NVS storage functionality |
 | `mesh_core/mesh_main.c` | Initialize/enable/disable BLE Mesh |
 
+					表2.4  模块文件描述
+
 ## 3. 辅助程序:
 
 辅助程序指的是 ESP BLE Mesh 协议栈中非必须的程序。
