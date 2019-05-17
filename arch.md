@@ -25,12 +25,18 @@ ESP BLE Mesh 协议栈实现了 Mesh Profile 的所有功能，并通过了蓝�
  * 比如图 1.1 中最左边的那一列：`Bluetooth Low Energy Core` <--> `Advertising Bearer` <--> `Network Layer` <--> `Lower Transport Layer` <--> `Upper Transport Layer` <--> `Access Layer` <--> `Foundation Model Layer` <-->`Model Layer` <--> `API/Event` <--> `Application`。
  * 其中每一层对数据包都会进行不同的处理：`Network Layer`会对网络数据包进行模糊化/去模糊化, 加密/解密等； `Lower Transport Layer`会对数据包进行分包和重组； `Upper Transport Layer`会对数据包进行应用层的加密解密等。
 
+**Note：框架图中每一个子框图都能在 Mesh Profile 中找到具体的描述**
+
 ### 1.1 Mesh Networking
- 协议栈框架图中的 `Mesh Networking` 的功能是：
- 
- 
- `Mesh Networking`由
- 如下表所示：
+ 协议栈框架图中的 `Mesh Networking` 可以实现如下功能：
+ * 实现了 Mesh 网络中的成员之间( Node，provisioner )的通讯。
+ * 实现了 Mesh 网络中的消息的加密解密。
+ * 实现了 Mesh 网络资源的管理。
+ * 实现了 Mesh 消息的分包与重组。
+ * 实现了 Mesh 的节点特性(lpn,friend...)
+ ......
+
+ `Mesh Networking`功能的实现是基于层次结构的， `Mesh Networking`有 7 层组成，每一层的功能如下表所示：
 
 | Layer     | Function |
 | --------- | -------- |
@@ -48,7 +54,12 @@ ESP BLE Mesh 协议栈实现了 Mesh Profile 的所有功能，并通过了蓝�
 **Note：承载层（bearer layer）定义了如何使用底层低功耗协议传输Mesh 数据包。目前定义了两个承载层：广播承载层（Advertising Bearer）和 GATT 承载层。从协议栈框图中可以看出：GATT 承载层由 `GATT Bearer`，`Proxy Service`,`Proxy Protocol`组成，广播承载层由 Advertising Bearer 组成。**
 
 ### 1.2 Mesh Provisioning
- 协议栈框架图中的 `Mesh Provisioning` 每一层的具体功能如下表所示：
+ 协议栈框架图中的 `Mesh Provisioning` 可以实现如下功能：
+ * 实现了 Mesh 网络的组建。
+ * 实现了对设备的配置。
+ * 实现了 Mesh 网络资源的分配(单播地址，Iv index，NetKey)。
+.......
+`Mesh Provisioning`功能的实现是基于层次结构的，协议栈框架图中的 `Mesh Provisioning` 每一层的具体功能如下表所示：
 
 | Layer     | Function |
 | --------- | -------  |
@@ -63,7 +74,10 @@ ESP BLE Mesh 协议栈实现了 Mesh Profile 的所有功能，并通过了蓝�
 **代理协议 (Proxy Protocol)， GATT承载层 (GATT Bearer)和广播承载层 (Advertising Bearer)在协议栈的 Mesh Provisioning 和 Mesh Networking 中均可能使用。**
 
 ### 1.3 应用层
-应用层通过调用 ESP BLE Mesh协议栈提供的API，以及处理协议栈上报的Event来实现相应的功能。
+协议栈框架图中的 `Applications` 可以理解为我们提供的一些列 Demo 。用户可以在应用程序中使用 ESP BLE Mesh 的功能。
+
+应用层的工作原理：
+* 应用层（`Applications`）通过调用 ESP BLE Mesh 协议栈提供的 API，以及处理协议栈上报的 Event 来实现相应的功能。
 
 应用层（`Applications`）与 `API / Event`的交互：
 * 应用层调用 API ：
@@ -72,24 +86,35 @@ ESP BLE Mesh 协议栈实现了 Mesh Profile 的所有功能，并通过了蓝�
   * 调用 model 相关的 API发送消息。
   * 调用设备属性相关的 API 获取设备的本地信息。
 * 应用层处理 Event ：
-应用层的设计方式是基于事件的，事件会携带参数给应用层。
-事件主要分为两大类，调用 API 完成的事件以及 协议栈上报给应用层的事件，例如接收到节点消息等。
-事件通过应用层注册的回调函数进行上报，同时回调函数中也会包含对事件的相应处理。
+ * 应用层的设计方式是基于事件的，事件会携带参数给应用层。
+ * 事件主要分为两大类，调用 API 完成的事件以及 协议栈上报给应用层的事件，例如接收到节点消息等。
+ * 事件通过应用层注册的回调函数进行上报，同时回调函数中也会包含对事件的相应处理。
 
 `API / Event` 与 ESP BLE MESH 协议栈的交互：
 用户使用的 API 主要调用`Mesh Networking`，`Mesh Provisioning` 协议栈顶层提供的函数，也就是`Model Layer`,`Foundation Model Layer`,`Provisioning Protocol`提供的函数。`API / Event` 和协议栈的交互不会跨越协议栈的层进行操作。比如 API 不会调用到 `Network Layer` 相关的函数。
 
 ## 2. 协议栈实现
+本章节根据设计思想进行分类，其中2.1和2.2章节使用的是分层实现方法，2.3章节使用的是模块实现方法。
 协议栈代码在设计时主要用到了两个思想：分层思想和模块思想。
-* 分层思想：从协议栈描述的层去设计文件，该类型的文件有一个明显的特征就是存在接口函数。其中 `Mesh Networking` 和 `Provisioning `都是基于该思想进行实现的。
+
+* 分层思想：从协议栈描述的层去设计文件，该类型的文件有一个明显的特征就是存在接口函数。其中 `Mesh Networking` 和 `Provisioning `都是基于该思想进行实现的。`Mesh Networking` 和 `Provisioning `具体设计如图 2.1 所示：
 * 模块思想：该文件实现一个独立的功能，供其它程序去调用。
 
 ![arch](images/interface.png)
 图 2.1 协议栈接口图
+协议栈接口图主要由 3 列组成：
 
-接口图详细的描述了每一层对应的实现文件和文件的接口函数，也反应了数据包接收和发送的处理流程。
+ * `mesh_bearer_adapt.c`--`adv.c`--`net.c`--`transport.c`--`access.c`--**[`health_srv.c`--`health_cli.c`--`cfg_srv.c`--`cfg_cli.c`]**--**[`time_scene_client.c`--`sensor_client.c`--`lighting_client.c`--`generic_client.c`]**
+ 这一列对应了Mesh Networking 的实现。这一列中的文件与文件的数据交互以及所在的层次结构在图上均有具体的描述。
+ 
+* `prov.c`--`proxy.c`--`beacon.c` 这一列对应了Mesh Provisioning 中的节点（Node）端的配置行为实现。这一列中的文件与文件的数据交互以及所在的层次结构在图上均有具体的描述。
+
+* `provisioner_proxy.c`--`provisioner_prov.c`--`provisioner_beacon.c`--`provisioner_main.c`  这一列对应了Mesh Provisioning 中的Provisioner 配置设备的功能的实现。这一列中的文件与文件的数据交互以及所在的层次结构在图上均有具体的描述。
+
+** Note：用户可以根据协议栈接口图中反应的关系去分析代码。 **
 
 ###2.1 Mesh Networking 实现
+
 
 | File | Functionality |
 | ------ | ------ |
