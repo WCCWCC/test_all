@@ -1,4 +1,3 @@
-[TOC]
 # ESP BLE Mesh 架构
 ESP BLE Mesh 架构包含主要分为两大部分: ESP BLE Mesh 协议栈和 Mesh Models。
 ESP BLE Mesh 协议栈是对 [Mesh Profile]() 的实现。Mesh Models 是对[Mesh_Model_Specification]()的实现。
@@ -213,13 +212,13 @@ ESP BLE Mesh 架构是采用分层的方式进行设计的，数据包的处理�
 
 ### 2.5 Mesh Applications 实现
 我们已经为客户开发提供了一些列的 Demo，用户可以使用 Demo 进行产品开发。
-[ble_mesh_client_model]()
-[ble_mesh_console]()
-[ble_mesh_fast_provision]()
-[ble_mesh_client_model]()
-[ble_mesh_node]()
-[ble_mesh_provisioner]()
-[ble_mesh_wifi_coexist]()
+* [ble_mesh_client_model]()
+* [ble_mesh_console]()
+* [ble_mesh_fast_provision]()
+* [ble_mesh_client_model]()
+* [ble_mesh_node]()
+* [ble_mesh_provisioner]()
+* [ble_mesh_wifi_coexist]()
 
 
 ## 3. 辅助程序:
