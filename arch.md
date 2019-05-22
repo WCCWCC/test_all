@@ -36,7 +36,7 @@ ESP BLE Mesh 架构主要由 5 大部分组成:
  * 实现了 Mesh 网络中的消息的加密解密。
  * 实现了 Mesh 网络资源（举例几个）的管理。
  * 实现了 Mesh 消息的分包与重组。
- * 实现了 Mesh 的节点特性(lpn,friend...)
+8 * 实现了 Mesh 的节点特性(lpn,friend...)
  * 更多功能，请见[链接]()
 
  `Mesh Networking`功能的实现是基于层次结构的，共有 7 层组成，每一层的功能如表 1.1 所示：
@@ -72,6 +72,7 @@ ESP BLE Mesh 架构主要由 5 大部分组成:
 | PB-GATT  | PB-GATT is a provisioning bearer used to provision a device using Proxy PDUs to encapsulate Provisioning PDUs within the Mesh Provisioning Service . |
 | PB-ADV  |PB-ADV is a provisioning bearer used to provision a device using Generic Provisioning PDUs over the advertising channels. |
 | 配置服务 (Provisioning Service) | The Mesh Provisioning Service allows a Provisioning Client to provision a Provisioning Server to allow it to participate in the mesh network |
+
 					表1.2  Mesh Provisioning 框架描述
 
 
@@ -87,6 +88,7 @@ ESP BLE Mesh 架构主要由 5 大部分组成:
 | GATT承载层 (GATT Bearer) | The GATT bearer uses the Proxy protocol to transmit and receive `Proxy PDUs` between two devices over a GATT connection |
 | 广播承载层 (Advertising Bearer) | When using the advertising bearer, a mesh packet shall be sent in the Advertising Data of a `Bluetooth Low Energy advertising PDU` using the Mesh Message AD Type |
 
+					表1.3  Mesh Bearers 描述
 
 ### 1.4 Mesh Models
 协议栈架构图中的 `Bearer` 实现了如下功能：
@@ -99,6 +101,7 @@ ESP BLE Mesh 架构主要由 5 大部分组成:
 | --------- | -------  |
 | 模型层（Model Layer）| 模型层与模型等的实施、以及诸如行为、消息、状态等的实施有关。|
 
+					表1.4  Mesh Bearers 描述
 
 ### 1.5 Mesh Applications
 
@@ -167,6 +170,7 @@ ESP BLE Mesh 架构是采用分层的方式进行设计的，数据包的处理�
 | `mesh_core/transport.c` | BLE Mesh Lower/Upper Transport Layer |
 | `mesh_core/net.c` | BLE Mesh Network Layer, IV Update, Key Refresh |
 | `mesh_core/adv.c` | A task used to send BLE Mesh advertising packets and APIs used to allocate adv buffers |
+
 					表2.1  Mesh Networking 文件描述
 
 ### 2.2 Mesh Provisioning 实现
@@ -197,7 +201,9 @@ ESP BLE Mesh 架构是采用分层的方式进行设计的，数据包的处理�
 | File | Functionality |
 | ------ | ------ |
 | `mesh_core/mesh_bearer_adapt.c` | BLE Mesh Bearer Layer adapter，This file provides the interfaces used to receive and send BLE Mesh ADV & GATT related packets. |
-
+	
+					表2.4  Mesh Bearers 文件描述
+					
 **`mesh_bearer_adapt.c` 是Mesh Networking 框架中 `Advertising Bearer`和`GATT  Bearer`的实现。**
 
 ### 2.4 Mesh Models 实现
@@ -210,6 +216,7 @@ ESP BLE Mesh 架构是采用分层的方式进行设计的，数据包的处理�
 | `mesh_models/sensor_client.c` | Send BLE Mesh Sensor Client messages and receive corresponding response messages |
 | `mesh_models/time_scene_client.c` | Send BLE Mesh Time Scene Client messages and receive corresponding response messages |
 
+					表2.5  Mesh Models 文件描述
 ### 2.5 Mesh Applications 实现
 我们已经为客户开发提供了一些列的 Demo，用户可以使用 Demo 进行产品开发。
 * [ble_mesh_client_model]()
@@ -252,6 +259,7 @@ ESP BLE Mesh 架构是采用分层的方式进行设计的，数据包的处理�
 | `mesh_core/settings.c` | BLE Mesh Node NVS storage functionality |
 | `mesh_core/mesh_main.c` | Initialize/enable/disable BLE Mesh |
 | `mesh_core/provisioner_main.c` | BLE Mesh Provisioner manages networking inforamtion, e.g. provisioned nodes, local NetKeys, local AppKeys, etc. |
+
 					表3.1  模块文件描述
 
 
