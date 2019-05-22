@@ -24,7 +24,7 @@ ESP BLE Mesh 架构主要由 5 大部分组成:
 * ESP BLE MESH 协议栈
 	* `Mesh Networking` 负责 BLE Mesh 设备的网络消息处理等。
 	* `Mesh Provisioning` 负责 BLE Mesh 设备的启动配置流程。
-* `MESH Models`  实现了一些列的 Models `，比如：Generic Client models，Sensor Client models，Time Scene Client models and Lighting Cient models。
+* `MESH Models`  实现了一些列的 Models ，比如：Generic Client models，Sensor Client models，Time Scene Client models and Lighting Cient models。
 * `Mesh Bearers` 包括 `Advertising Bearer` 和 `GATT  Bearer`, ESP BLE Mesh 协议栈建立在低功耗蓝牙技术之上,通过承载层使用低功耗蓝牙的广播以及连接通道进行数据交互。
 * `Applications` 是基于 ESP BLE Mesh 协议栈 和 `Mesh Models` 的应用程序，`Applications` 通过调用 API 和处理 Event 的方式和 ESP BLE Mesh 协议栈中的 `Mesh Networking` 与 `Mesh Provisioning` 进行交互，以及和 `Mesh Models` 提供的一系列 Model 进行交互。
 * `Aux` 是 ESP BLE MESH 协议栈提供的辅助程序，每个辅助程序实现一个单独的功能，比如 Relay 功能等。
