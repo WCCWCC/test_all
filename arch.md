@@ -98,7 +98,6 @@ ESP BLE Mesh 架构主要由 5 大部分组成:
 * 实现了 Time and Scenes Client models。
 * 实现了 lighting Client models。
 
-(多一点)
 | Layer     | Function |
 | --------- | -------  |
 | 模型层（Model Layer）| 模型层与模型等的实施、以及诸如行为、消息、状态等的实施有关。|
